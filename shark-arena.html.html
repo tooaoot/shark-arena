@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shark Arena — Pacifica</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060810;
+    --surface: #0d1120;
+    --surface2: #141828;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #f0f2ff;
+    --muted: #5a6080;
+    --accent: #00e5a0;
+    --accent2: #0099ff;
+    --amber: #ffb800;
+    --red: #ff4455;
+    --purple: #9b6dff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 64px;
+    background: rgba(6,8,16,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .logo-shark { font-size: 22px; }
+  .logo span { color: var(--accent); }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .network-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'Space Mono', monospace;
+    color: var(--muted);
+  }
+  .net-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* WALLET BUTTON */
+  .wallet-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .wallet-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .wallet-btn.connected {
+    border-color: var(--accent);
+    background: rgba(0,229,160,0.08);
+    color: var(--accent);
+  }
+  .wallet-icon { font-size: 16px; }
+
+  /* WALLET MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 2rem;
+    width: 360px;
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .modal p { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
+  .modal-close {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    background: none; border: none;
+    color: var(--muted); font-size: 20px; cursor: pointer;
+  }
+  .wallet-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .wallet-option:hover { border-color: var(--accent); background: rgba(0,229,160,0.05); }
+  .wallet-option-icon { width: 40px; height: 40px; border-radius: 10px; display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .wallet-option-info .w-name { font-size: 15px; font-weight: 600; }
+  .wallet-option-info .w-sub { font-size: 12px; color: var(--muted); }
+
+  /* MAIN LAYOUT */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* CONNECT PROMPT */
+  .connect-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  .connect-shark-big { font-size: 80px; filter: drop-shadow(0 0 40px rgba(0,229,160,0.3)); animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .connect-prompt h1 { font-size: 36px; font-weight: 800; }
+  .connect-prompt h1 span { color: var(--accent); }
+  .connect-prompt p { font-size: 15px; color: var(--muted); max-width: 400px; line-height: 1.6; }
+  .connect-big-btn {
+    padding: 14px 32px;
+    background: var(--accent);
+    color: #060810;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+  }
+  .connect-big-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,229,160,0.3); }
+
+  /* DASHBOARD */
+  .dashboard { display: none; }
+  .dashboard.visible { display: block; }
+
+  /* WALLET INFO BAR */
+  .wallet-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+  }
+  .wallet-bar-addr { color: var(--accent); flex: 1; }
+  .wallet-bar-net { color: var(--muted); }
+  .copy-btn {
+    background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px;
+    transition: color 0.2s;
+  }
+  .copy-btn:hover { color: var(--accent); }
+
+  /* STATS GRID */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 12px;
+    margin-bottom: 1.5rem;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--border2); }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .stat-card.teal::before { background: linear-gradient(90deg, var(--accent), transparent); }
+  .stat-card.blue::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+  .stat-card.amber::before { background: linear-gradient(90deg, var(--amber), transparent); }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .stat-value { font-size: 22px; font-weight: 700; font-family: 'Space Mono', monospace; }
+  .stat-value.green { color: var(--accent); }
+  .stat-value.blue { color: var(--accent2); }
+  .stat-value.amber { color: var(--amber); }
+  .stat-value.red { color: var(--red); }
+  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; font-family: 'Space Mono', monospace; }
+  .loading-val { color: var(--muted); animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+  /* MAIN GRID */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* SHARK CARD */
+  .shark-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .shark-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 50%;
+    transform: translateX(-50%);
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,229,160,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .shark-stage-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .shark-canvas {
+    width: 160px;
+    height: 160px;
+    margin-bottom: 1rem;
+  }
+  .shark-name {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    text-align: center;
+  }
+  .shark-vol-needed {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 1.2rem;
+    text-align: center;
+  }
+
+  /* PROGRESS */
+  .progress-section { width: 100%; }
+  .progress-item { margin-bottom: 12px; }
+  .progress-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+  .progress-header .p-label { color: var(--muted); }
+  .progress-header .p-val { font-family: 'Space Mono', monospace; font-weight: 700; }
+  .progress-track {
+    height: 5px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+  .fill-accent { background: var(--accent); }
+  .fill-blue { background: var(--accent2); }
+  .fill-amber { background: var(--amber); }
+
+  /* EVO PANEL */
+  .evo-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .panel-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .evo-stages { display: flex; flex-direction: column; gap: 6px; }
+  .evo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  .evo-item.reached { border-color: rgba(0,229,160,0.2); background: rgba(0,229,160,0.04); }
+  .evo-item.current { border-color: var(--accent); background: rgba(0,229,160,0.08); }
+  .evo-item.locked { opacity: 0.4; }
+  .evo-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .evo-item.reached .evo-num, .evo-item.current .evo-num {
+    background: var(--accent); border-color: var(--accent); color: #060810;
+  }
+  .evo-shark-mini { font-size: 20px; flex-shrink: 0; }
+  .evo-info { flex: 1; }
+  .evo-name { font-size: 13px; font-weight: 600; }
+  .evo-req { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .evo-check { font-size: 14px; color: var(--accent); }
+
+  /* STREAK CARD */
+  .streak-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .streak-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .streak-count { font-size: 28px; font-weight: 800; color: var(--amber); font-family: 'Space Mono', monospace; }
+  .streak-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .streak-days { display: flex; gap: 8px; }
+  .day-cell {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .day-label { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .day-dot {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .day-dot.done { background: rgba(0,229,160,0.15); border-color: var(--accent); }
+  .day-dot.today { background: var(--accent); border-color: var(--accent); }
+  .day-dot.missed { background: rgba(255,68,85,0.1); border-color: rgba(255,68,85,0.3); }
+
+  /* EGG REWARD CARD */
+  .egg-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .egg-inner { display: flex; align-items: center; gap: 1rem; }
+  .egg-icon { font-size: 48px; filter: drop-shadow(0 0 12px rgba(0,229,160,0.3)); }
+  .egg-body { flex: 1; }
+  .egg-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .egg-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .egg-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .egg-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: 'Space Mono', monospace;
+  }
+  .tag-green { background: rgba(0,229,160,0.12); color: var(--accent); }
+  .tag-amber { background: rgba(255,184,0,0.12); color: var(--amber); }
+
+  /* TRADES TABLE */
+  .trades-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-top: 16px;
+  }
+  .trades-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .refresh-btn {
+    background: none;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 12px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    transition: all 0.2s;
+  }
+  .refresh-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .refresh-btn.spinning { animation: spin 1s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .trades-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .trades-table th {
+    text-align: left;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 12px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .trades-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+  }
+  .trades-table tr:last-child td { border-bottom: none; }
+  .side-long { color: var(--accent); }
+  .side-short { color: var(--red); }
+  .empty-state { text-align: center; color: var(--muted); padding: 2rem; font-size: 14px; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 14px;
+    z-index: 300;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 300px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--accent); }
+  .toast.error { border-color: var(--red); }
+
+  /* ERROR BANNER */
+  .api-error {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(255,68,85,0.07);
+    border: 1px solid rgba(255,68,85,0.2);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    font-size: 13px;
+    color: var(--red);
+  }
+  .api-error.visible { display: flex; }
+
+  @media (max-width: 768px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <span class="logo-shark">🦈</span>
+    Shark<span>Arena</span>
+  </div>
+  <div class="header-right">
+    <div class="network-badge">
+      <div class="net-dot"></div>
+      Solana Mainnet
+    </div>
+    <button class="wallet-btn" id="walletBtn" onclick="openWalletModal()">
+      <span class="wallet-icon">👛</span>
+      지갑 연결
+    </button>
+  </div>
+</header>
+
+<!-- WALLET MODAL -->
+<div class="modal-overlay" id="walletModal">
+  <div class="modal" style="position:relative;">
+    <button class="modal-close" onclick="closeWalletModal()">✕</button>
+    <h3>지갑 연결</h3>
+    <p>Pacifica DEX와 연동할 지갑을 선택하세요</p>
+    <div class="wallet-option" onclick="connectWallet('phantom')">
+      <div class="wallet-option-icon" style="background:rgba(171,120,255,0.15);">👻</div>
+      <div class="wallet-option-info">
+        <div class="w-name">Phantom</div>
+        <div class="w-sub">Solana 전용 지갑</div>
+      </div>
+    </div>
+    <div class="wallet-option" onclick="connectWallet('solflare')">
+      <div class="wallet-option-icon" style="background:rgba(255,140,0,0.15);">☀️</div>
+      <div class="wallet-option-info">
+        <div class="w-name">Solflare</div>
+        <div class="w-sub">Solana 전용 지갑</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- CONNECT PROMPT -->
+  <div class="connect-prompt" id="connectPrompt">
+    <div class="connect-shark-big">🦈</div>
+    <h1>상어로 <span>진화</span>하세요</h1>
+    <p>Pacifica DEX에서 거래하고 상어를 진화시키세요. 거래량에 따라 7단계 상어로 성장합니다.</p>
+    <button class="connect-big-btn" onclick="openWalletModal()">지갑 연결하기</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard" id="dashboard">
+
+    <!-- WALLET BAR -->
+    <div class="wallet-bar">
+      <span style="color:var(--muted); font-size:12px;">연결된 지갑</span>
+      <span class="wallet-bar-addr" id="walletAddr">—</span>
+      <button class="copy-btn" onclick="copyAddr()" title="주소 복사">📋</button>
+      <span class="wallet-bar-net" style="font-size:12px;">Solana</span>
+      <button onclick="disconnect()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;">연결 해제</button>
+    </div>
+
+    <!-- API ERROR -->
+    <div class="api-error" id="apiError">
+      ⚠️ <span id="apiErrorMsg">Pacifica API 연결 중 오류가 발생했습니다. CORS 제한으로 인해 데모 데이터를 표시합니다.</span>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card teal">
+        <div class="stat-label">누적 거래량</div>
+        <div class="stat-value green" id="statVolume"><span class="loading-val">로딩중...</span></div>
+        <div class="stat-sub" id="statVolumeSub">Pacifica DEX 기준</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">PnL (미실현)</div>
+        <div class="stat-value blue" id="statPnl"><span class="loading-val">로딩중...</span></div>
+        <div class="stat-sub" id="statPnlSub">현재 포지션 기준</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-label">계정 잔고</div>
+        <div class="stat-value amber" id="statBalance"><span class="loading-val">로딩중...</span></div>
+        <div class="stat-sub" id="statBalanceSub">USDC</div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="main-grid">
+
+      <!-- SHARK CARD -->
+      <div class="shark-card">
+        <div class="shark-stage-label">현재 등급</div>
+        <svg class="shark-canvas" viewBox="0 0 160 160" id="sharkSvg"></svg>
+        <div class="shark-name" id="sharkName">—</div>
+        <div class="shark-vol-needed" id="sharkNextInfo">—</div>
+        <div class="progress-section">
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="p-label">다음 단계까지</span>
+              <span class="p-val" id="progPct">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill fill-accent" id="progBar" style="width:0%"></div>
+            </div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="p-label">상어알 ($10,000)</span>
+              <span class="p-val fill-blue" id="eggPct" style="color:var(--accent2)">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill fill-blue" id="eggBar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EVO PANEL -->
+      <div class="evo-panel">
+        <div class="panel-title">진화 로드맵</div>
+        <div class="evo-stages" id="evoStages"></div>
+      </div>
+    </div>
+
+    <!-- BOTTOM GRID -->
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+
+      <!-- STREAK -->
+      <div class="streak-card">
+        <div class="streak-header">
+          <div>
+            <div class="streak-count" id="streakNum">0</div>
+            <div class="streak-label">연속 거래일</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:13px; color:var(--muted);">7일 달성 시</div>
+            <div style="font-size:13px; color:var(--amber); font-weight:600;">상어알 부활 🥚</div>
+          </div>
+        </div>
+        <div class="streak-days" id="streakDays"></div>
+      </div>
+
+      <!-- EGG REWARD -->
+      <div class="egg-card">
+        <div class="panel-title">상어알 보상</div>
+        <div class="egg-inner">
+          <div class="egg-icon" id="eggIcon">🥚</div>
+          <div class="egg-body">
+            <div class="egg-title" id="eggTitle">상어알 획득 조건</div>
+            <div class="egg-desc" id="eggDesc">Pacifica에서 $10,000 거래를 달성하면 상어알을 보상으로 획득합니다.</div>
+            <div class="egg-tags">
+              <span class="egg-tag tag-green">$10,000 거래</span>
+              <span class="egg-tag tag-amber">7일 연속 부활</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRADES TABLE -->
+    <div class="trades-card">
+      <div class="trades-header">
+        <div class="panel-title" style="margin:0;">최근 거래 내역</div>
+        <button class="refresh-btn" id="refreshBtn" onclick="loadData()">↻ 새로고침</button>
+      </div>
+      <table class="trades-table">
+        <thead>
+          <tr>
+            <th>시간</th>
+            <th>마켓</th>
+            <th>방향</th>
+            <th>가격</th>
+            <th>수량</th>
+            <th>거래금액</th>
+          </tr>
+        </thead>
+        <tbody id="tradesBody">
+          <tr><td colspan="6" class="empty-state">거래 내역을 불러오는 중...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</main>
+
+<script>
+// ── CONSTANTS ──────────────────────────────────────────────
+const API_BASE = 'https://api.pacifica.fi/api/v1';
+
+const STAGES = [
+  { name: '상어 알',     minVol: 0,          color: '#378ADD', emoji: '🥚' },
+  { name: '베이비 상어', minVol: 10000,       color: '#1D9E75', emoji: '🐟' },
+  { name: '청상어',      minVol: 100000,      color: '#185FA5', emoji: '🦈' },
+  { name: '함머헤드',    minVol: 500000,      color: '#BA7517', emoji: '🦈' },
+  { name: '백상아리',    minVol: 1000000,     color: '#993C1D', emoji: '🦈' },
+  { name: '메가로돈',    minVol: 3000000,     color: '#534AB7', emoji: '🦈' },
+  { name: '상어 왕',     minVol: 10000000,    color: '#BA7517', emoji: '👑' },
+];
+
+// ── STATE ──────────────────────────────────────────────────
+let walletAddr = null;
+let walletType = null;
+let accountData = null;
+let tradesData = [];
+let totalVolume = 0;
+let streakDays = [false,false,false,false,false,false,false];
+
+// ── WALLET MODAL ───────────────────────────────────────────
+function openWalletModal() { document.getElementById('walletModal').classList.add('open'); }
+function closeWalletModal() { document.getElementById('walletModal').classList.remove('open'); }
+document.getElementById('walletModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeWalletModal();
+});
+
+// ── CONNECT WALLET ─────────────────────────────────────────
+async function connectWallet(type) {
+  closeWalletModal();
+  try {
+    let addr = null;
+
+    if (type === 'phantom') {
+      if (!window.solana?.isPhantom) {
+        showToast('Phantom 지갑이 설치되어 있지 않습니다. 설치 후 다시 시도하세요.', 'error');
+        setTimeout(() => window.open('https://phantom.app', '_blank'), 1500);
+        return;
+      }
+      const resp = await window.solana.connect();
+      addr = resp.publicKey.toString();
+    } else if (type === 'solflare') {
+      if (!window.solflare?.isSolflare) {
+        showToast('Solflare 지갑이 설치되어 있지 않습니다. 설치 후 다시 시도하세요.', 'error');
+        setTimeout(() => window.open('https://solflare.com', '_blank'), 1500);
+        return;
+      }
+      await window.solflare.connect();
+      addr = window.solflare.publicKey.toString();
+    }
+
+    if (addr) {
+      walletAddr = addr;
+      walletType = type;
+      onConnected();
+    }
+  } catch (err) {
+    if (err.code === 4001) {
+      showToast('지갑 연결을 취소했습니다.', 'error');
+    } else {
+      // 개발/데모 환경: 지갑 미설치 시 데모 주소로 진행
+      showToast('데모 모드: 샘플 데이터를 표시합니다.', 'success');
+      walletAddr = 'DEMO' + Math.random().toString(36).substr(2,8).toUpperCase() + '...Pacifica';
+      walletType = type;
+      onConnected();
+    }
+  }
+}
+
+function onConnected() {
+  // UI 전환
+  document.getElementById('connectPrompt').style.display = 'none';
+  document.getElementById('dashboard').classList.add('visible');
+
+  // 헤더 버튼
+  const btn = document.getElementById('walletBtn');
+  btn.classList.add('connected');
+  btn.innerHTML = `<span class="wallet-icon">${walletType === 'phantom' ? '👻' : '☀️'}</span> ${shortAddr(walletAddr)}`;
+
+  // 주소 표시
+  document.getElementById('walletAddr').textContent = walletAddr;
+
+  showToast('지갑 연결 완료!', 'success');
+  loadData();
+}
+
+function disconnect() {
+  walletAddr = null;
+  walletType = null;
+  document.getElementById('connectPrompt').style.display = 'flex';
+  document.getElementById('dashboard').classList.remove('visible');
+  const btn = document.getElementById('walletBtn');
+  btn.classList.remove('connected');
+  btn.innerHTML = `<span class="wallet-icon">👛</span> 지갑 연결`;
+  showToast('연결이 해제되었습니다.', '');
+}
+
+function shortAddr(addr) {
+  if (!addr) return '';
+  return addr.slice(0, 6) + '...' + addr.slice(-4);
+}
+
+function copyAddr() {
+  navigator.clipboard.writeText(walletAddr).then(() => showToast('주소가 복사되었습니다.', 'success'));
+}
+
+// ── API FETCH ──────────────────────────────────────────────
+async function fetchPacifica(endpoint) {
+  const url = `${API_BASE}${endpoint}`;
+  const res = await fetch(url, {
+    headers: { 'Accept': 'application/json' },
+    mode: 'cors'
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function loadData() {
+  if (!walletAddr) return;
+  setRefreshSpinning(true);
+  hideApiError();
+
+  try {
+    await Promise.all([
+      loadAccountInfo(),
+      loadTrades(),
+    ]);
+  } catch (err) {
+    showApiError('Pacifica API에 직접 접근이 제한됩니다 (CORS). 실제 배포 환경에서는 백엔드 프록시를 통해 연동하세요. 현재는 데모 데이터를 표시합니다.');
+    loadDemoData();
+  } finally {
+    setRefreshSpinning(false);
+  }
+}
+
+async function loadAccountInfo() {
+  const data = await fetchPacifica(`/account?account=${walletAddr}`);
+  if (data.success) {
+    const d = data.data;
+    accountData = d;
+    const balance = parseFloat(d.balance || d.equity || 0);
+    const pnl = parseFloat(d.unrealized_pnl || 0);
+    document.getElementById('statBalance').textContent = '$' + balance.toLocaleString('en', {maximumFractionDigits:2});
+    const pnlEl = document.getElementById('statPnl');
+    pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + Math.abs(pnl).toLocaleString('en', {maximumFractionDigits:2});
+    pnlEl.className = 'stat-value ' + (pnl >= 0 ? 'green' : 'red');
+  }
+}
+
+async function loadTrades() {
+  const data = await fetchPacifica(`/trades/history?account=${walletAddr}&limit=20`);
+  if (data.success && data.data) {
+    tradesData = data.data;
+    computeVolume();
+    renderTrades();
+  }
+}
+
+// ── DEMO DATA (CORS fallback) ──────────────────────────────
+function loadDemoData() {
+  // 데모 계정 정보
+  const demoBalance = 12480.50;
+  const demoPnl = 342.80;
+  document.getElementById('statBalance').textContent = '$' + demoBalance.toLocaleString('en', {maximumFractionDigits:2});
+  const pnlEl = document.getElementById('statPnl');
+  pnlEl.textContent = '+$' + demoPnl.toFixed(2);
+  pnlEl.className = 'stat-value green';
+
+  // 데모 거래 내역
+  const symbols = ['BTC', 'ETH', 'SOL', 'SUI', 'JUP'];
+  const sides = ['open_long','close_long','open_short','close_short'];
+  tradesData = Array.from({length: 12}, (_, i) => {
+    const sym = symbols[Math.floor(Math.random() * symbols.length)];
+    const side = sides[Math.floor(Math.random() * sides.length)];
+    const price = sym === 'BTC' ? 98000 + Math.random()*4000 :
+                  sym === 'ETH' ? 3200 + Math.random()*300 :
+                  sym === 'SOL' ? 180 + Math.random()*20 : 2 + Math.random()*3;
+    const amount = parseFloat((Math.random() * 2 + 0.01).toFixed(4));
+    return {
+      created_at: Date.now() - i * 3600000 * Math.random() * 6,
+      symbol: sym,
+      side,
+      price: price.toFixed(2),
+      amount: amount.toFixed(4),
+    };
+  });
+
+  // 데모 거래량 (중간 진행 상태)
+  totalVolume = 74200;
+  document.getElementById('statVolume').textContent = '$' + totalVolume.toLocaleString('en');
+
+  // 데모 스트릭 (5일)
+  streakDays = [true, true, true, true, true, false, false];
+
+  renderTrades();
+  renderStreak();
+  renderShark();
+  renderEvoStages();
+  renderEggStatus();
+}
+
+// ── COMPUTE VOLUME ─────────────────────────────────────────
+function computeVolume() {
+  totalVolume = tradesData.reduce((sum, t) => {
+    const val = parseFloat(t.price) * parseFloat(t.amount);
+    return sum + (isNaN(val) ? 0 : val);
+  }, 0);
+  document.getElementById('statVolume').textContent = '$' + totalVolume.toLocaleString('en', {maximumFractionDigits:0});
+
+  // 스트릭 계산 (거래 날짜 기준 최근 7일)
+  const today = new Date();
+  const days = Array.from({length: 7}, (_, i) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - (6 - i));
+    return d.toDateString();
+  });
+  streakDays = days.map(day =>
+    tradesData.some(t => new Date(t.created_at).toDateString() === day)
+  );
+
+  renderStreak();
+  renderShark();
+  renderEvoStages();
+  renderEggStatus();
+}
+
+// ── RENDER TRADES ──────────────────────────────────────────
+function renderTrades() {
+  const tbody = document.getElementById('tradesBody');
+  if (!tradesData.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">거래 내역이 없습니다</td></tr>';
+    return;
+  }
+  const sideLabel = {
+    open_long: '롱 진입', close_long: '롱 청산',
+    open_short: '숏 진입', close_short: '숏 청산',
+    fulfill_taker: '체결', fulfill_maker: '체결'
+  };
+  const sideClass = {
+    open_long: 'side-long', close_long: 'side-long',
+    open_short: 'side-short', close_short: 'side-short',
+    fulfill_taker: 'side-long', fulfill_maker: 'side-long'
+  };
+  tbody.innerHTML = tradesData.slice(0, 10).map(t => {
+    const dt = new Date(t.created_at);
+    const time = dt.toLocaleDateString('ko-KR', {month:'2-digit',day:'2-digit'}) + ' ' +
+                 dt.toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'});
+    const price = parseFloat(t.price);
+    const amount = parseFloat(t.amount);
+    const notional = (price * amount).toFixed(2);
+    const cls = sideClass[t.side] || '';
+    const label = sideLabel[t.side] || t.side;
+    return `<tr>
+      <td style="color:var(--muted)">${time}</td>
+      <td style="font-weight:600">${t.symbol}</td>
+      <td class="${cls}">${label}</td>
+      <td>$${price.toLocaleString('en', {maximumFractionDigits:2})}</td>
+      <td>${amount}</td>
+      <td style="color:var(--text)">$${parseFloat(notional).toLocaleString('en', {maximumFractionDigits:2})}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── RENDER STREAK ──────────────────────────────────────────
+function renderStreak() {
+  const labels = ['월','화','수','목','금','토','일'];
+  const container = document.getElementById('streakDays');
+  const today = new Date().getDay();
+  const todayIdx = today === 0 ? 6 : today - 1;
+
+  let streak = 0;
+  for (let i = streakDays.length - 1; i >= 0; i--) {
+    if (streakDays[i]) streak++; else break;
+  }
+  document.getElementById('streakNum').textContent = streak;
+
+  container.innerHTML = streakDays.map((done, i) => {
+    const isToday = i === todayIdx;
+    const cls = isToday ? 'today' : done ? 'done' : 'missed';
+    const icon = isToday ? '⭐' : done ? '✓' : '·';
+    return `<div class="day-cell">
+      <div class="day-label">${labels[i]}</div>
+      <div class="day-dot ${cls}">${icon}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER EGG STATUS ──────────────────────────────────────
+function renderEggStatus() {
+  const earned = totalVolume >= 10000;
+  const streak = streakDays.filter(Boolean).length;
+  const revived = streak >= 7;
+
+  document.getElementById('eggIcon').textContent = earned ? (revived ? '🥚✨' : '🥚') : '🫧';
+  document.getElementById('eggTitle').textContent = earned ? '상어알 획득!' : '상어알 미획득';
+  document.getElementById('eggDesc').textContent = earned
+    ? revived
+      ? '7일 연속 거래 달성! 상어알이 부활했습니다.'
+      : `상어알을 획득했습니다. 7일 연속 거래 시 부활합니다. (현재 ${streak}일)`
+    : `$10,000 거래를 달성하면 상어알을 획득합니다. (현재 $${totalVolume.toLocaleString('en', {maximumFractionDigits:0})})`;
+}
+
+// ── RENDER SHARK SVG ───────────────────────────────────────
+function getStageIndex(vol) {
+  let idx = 0;
+  for (let i = STAGES.length - 1; i >= 0; i--) {
+    if (vol >= STAGES[i].minVol) { idx = i; break; }
+  }
+  return idx;
+}
+
+function renderShark() {
+  const idx = getStageIndex(totalVolume);
+  const stage = STAGES[idx];
+  const nextStage = STAGES[idx + 1];
+
+  document.getElementById('sharkName').textContent = stage.name;
+  document.getElementById('sharkName').style.color = stage.color;
+
+  if (nextStage) {
+    const remaining = nextStage.minVol - totalVolume;
+    document.getElementById('sharkNextInfo').textContent =
+      `다음: ${nextStage.name} ($${remaining.toLocaleString('en', {maximumFractionDigits:0})} 남음)`;
+    const pct = Math.round(((totalVolume - stage.minVol) / (nextStage.minVol - stage.minVol)) * 100);
+    document.getElementById('progPct').textContent = pct + '%';
+    document.getElementById('progBar').style.width = pct + '%';
+  } else {
+    document.getElementById('sharkNextInfo').textContent = '최고 등급 달성!';
+    document.getElementById('progPct').textContent = '100%';
+    document.getElementById('progBar').style.width = '100%';
+  }
+
+  const eggPct = Math.min(100, Math.round((totalVolume / 10000) * 100));
+  document.getElementById('eggPct').textContent = eggPct + '%';
+  document.getElementById('eggBar').style.width = eggPct + '%';
+
+  drawSharkSvg(idx);
+}
+
+function drawSharkSvg(idx) {
+  const svg = document.getElementById('sharkSvg');
+  const cx = 80, cy = 90;
+
+  const svgs = [
+    // 0: 상어알
+    `<ellipse cx="${cx}" cy="${cy}" rx="38" ry="45" fill="#B5D4F4" stroke="#378ADD" stroke-width="2"/>
+     <ellipse cx="${cx}" cy="${cy-8}" rx="19" ry="25" fill="#E6F1FB" opacity="0.6"/>
+     <ellipse cx="${cx-10}" cy="${cy-12}" rx="6" ry="7" fill="#0C447C"/>
+     <ellipse cx="${cx-10}" cy="${cy-14}" rx="2.5" ry="3" fill="white"/>
+     <ellipse cx="${cx+10}" cy="${cy-12}" rx="6" ry="7" fill="#0C447C"/>
+     <ellipse cx="${cx+10}" cy="${cy-14}" rx="2.5" ry="3" fill="white"/>
+     <path d="M${cx-10} ${cy+5} Q${cx} ${cy+12} ${cx+10} ${cy+5}" stroke="#378ADD" stroke-width="2" fill="none" stroke-linecap="round"/>
+     <path d="M${cx} ${cy-42} L${cx-4} ${cy-32}" stroke="#378ADD" stroke-width="1.5" opacity="0.5"/>
+     <path d="M${cx+8} ${cy-38} L${cx+7} ${cy-28}" stroke="#378ADD" stroke-width="1.5" opacity="0.5"/>`,
+    // 1: 베이비
+    `<ellipse cx="${cx}" cy="${cy+4}" rx="44" ry="32" fill="#9FE1CB" stroke="#1D9E75" stroke-width="2"/>
+     <polygon points="${cx},${cy-45} ${cx-16},${cy-10} ${cx+16},${cy-10}" fill="#5DCAA5" stroke="#1D9E75" stroke-width="1.5"/>
+     <ellipse cx="${cx-28}" cy="${cy+2}" rx="10" ry="8" fill="#9FE1CB" stroke="#1D9E75" stroke-width="1.5"/>
+     <ellipse cx="${cx+28}" cy="${cy+2}" rx="10" ry="8" fill="#9FE1CB" stroke="#1D9E75" stroke-width="1.5"/>
+     <ellipse cx="${cx-14}" cy="${cy-2}" rx="6" ry="7" fill="#085041"/>
+     <ellipse cx="${cx-14}" cy="${cy-4}" rx="2.5" ry="3" fill="white"/>
+     <ellipse cx="${cx+14}" cy="${cy-2}" rx="6" ry="7" fill="#085041"/>
+     <ellipse cx="${cx+14}" cy="${cy-4}" rx="2.5" ry="3" fill="white"/>
+     <path d="M${cx-14} ${cy+16} Q${cx} ${cy+24} ${cx+14} ${cy+16}" stroke="#1D9E75" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+    // 2: 청상어
+    `<ellipse cx="${cx}" cy="${cy+4}" rx="48" ry="33" fill="#B5D4F4" stroke="#185FA5" stroke-width="2"/>
+     <polygon points="${cx},${cx-65} ${cx-18},${cy-12} ${cx+18},${cy-12}" fill="#85B7EB" stroke="#185FA5" stroke-width="2"/>
+     <polygon points="${cx-58},${cy-4} ${cx-72},${cy-20} ${cx-48},${cy+12}" fill="#85B7EB" stroke="#185FA5" stroke-width="1.5"/>
+     <polygon points="${cx+58},${cy-4} ${cx+72},${cy-20} ${cx+48},${cy+12}" fill="#85B7EB" stroke="#185FA5" stroke-width="1.5"/>
+     <ellipse cx="${cx-16}" cy="${cy}" rx="7" ry="8" fill="#0C447C"/>
+     <ellipse cx="${cx-16}" cy="${cy-2}" rx="3" ry="3.5" fill="white"/>
+     <ellipse cx="${cx+16}" cy="${cy}" rx="7" ry="8" fill="#0C447C"/>
+     <ellipse cx="${cx+16}" cy="${cy-2}" rx="3" ry="3.5" fill="white"/>
+     <path d="M${cx-16} ${cy+18} Q${cx} ${cy+28} ${cx+16} ${cy+18}" stroke="#185FA5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+     <path d="M${cx-12} ${cy+21} L${cx-9} ${cy+27} M${cx} ${cy+23} L${cx} ${cy+29} M${cx+12} ${cy+21} L${cx+9} ${cy+27}" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>`,
+    // 3: 함머헤드
+    `<ellipse cx="${cx}" cy="${cy+4}" rx="50" ry="33" fill="#FAC775" stroke="#BA7517" stroke-width="2"/>
+     <polygon points="${cx},${cy-55} ${cx-20},${cy-10} ${cx+20},${cy-10}" fill="#EF9F27" stroke="#BA7517" stroke-width="2"/>
+     <polygon points="${cx-62},${cy-6} ${cx-76},${cy-22} ${cx-52},${cy+14}" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
+     <polygon points="${cx+62},${cy-6} ${cx+76},${cy-22} ${cx+52},${cy+14}" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
+     <ellipse cx="${cx-18}" cy="${cy+2}" rx="8" ry="9" fill="#633806"/>
+     <ellipse cx="${cx-18}" cy="${cy}" rx="3.5" ry="4" fill="white"/>
+     <ellipse cx="${cx+18}" cy="${cy+2}" rx="8" ry="9" fill="#633806"/>
+     <ellipse cx="${cx+18}" cy="${cy}" rx="3.5" ry="4" fill="white"/>
+     <path d="M${cx-18} ${cy+20} Q${cx} ${cy+30} ${cx+18} ${cy+20}" stroke="#BA7517" stroke-width="3" fill="none" stroke-linecap="round"/>
+     <path d="M${cx-14} ${cy+24} L${cx-11} ${cy+30} M${cx} ${cy+26} L${cx} ${cy+33} M${cx+14} ${cy+24} L${cx+11} ${cy+30}" stroke="#633806" stroke-width="1.8" stroke-linecap="round"/>`,
+    // 4: 백상아리
+    `<ellipse cx="${cx}" cy="${cy+4}" rx="52" ry="34" fill="#F0997B" stroke="#993C1D" stroke-width="2"/>
+     <polygon points="${cx},${cy-60} ${cx-22},${cy-10} ${cx+22},${cy-10}" fill="#D85A30" stroke="#993C1D" stroke-width="2"/>
+     <polygon points="${cx-65},${cy-8} ${cx-80},${cy-26} ${cx-55},${cy+14}" fill="#D85A30" stroke="#993C1D" stroke-width="1.5"/>
+     <polygon points="${cx+65},${cy-8} ${cx+80},${cy-26} ${cx+55},${cy+14}" fill="#D85A30" stroke="#993C1D" stroke-width="1.5"/>
+     <polygon points="${cx},${cy+36} ${cx-16},${cy+18} ${cx+16},${cy+18}" fill="#D85A30" stroke="#993C1D" stroke-width="1.5"/>
+     <ellipse cx="${cx-20}" cy="${cy+2}" rx="9" ry="10" fill="#4A1B0C"/>
+     <ellipse cx="${cx-20}" cy="${cy-1}" rx="4" ry="4.5" fill="white"/>
+     <ellipse cx="${cx+20}" cy="${cy+2}" rx="9" ry="10" fill="#4A1B0C"/>
+     <ellipse cx="${cx+20}" cy="${cy-1}" rx="4" ry="4.5" fill="white"/>
+     <path d="M${cx-20} ${cy+20} Q${cx} ${cy+32} ${cx+20} ${cy+20}" stroke="#993C1D" stroke-width="3" fill="none" stroke-linecap="round"/>
+     <path d="M${cx-16} ${cy+24} L${cx-13} ${cy+31} M${cx} ${cy+27} L${cx} ${cy+34} M${cx+16} ${cy+24} L${cx+13} ${cy+31}" stroke="#4A1B0C" stroke-width="2" stroke-linecap="round"/>`,
+    // 5: 메가로돈
+    `<ellipse cx="${cx}" cy="${cy+4}" rx="54" ry="35" fill="#AFA9EC" stroke="#534AB7" stroke-width="2"/>
+     <polygon points="${cx},${cy-65} ${cx-24},${cy-10} ${cx+24},${cy-10}" fill="#7F77DD" stroke="#534AB7" stroke-width="2"/>
+     <polygon points="${cx-68},${cy-10} ${cx-84},${cy-30} ${cx-56},${cy+14}" fill="#7F77DD" stroke="#534AB7" stroke-width="1.5"/>
+     <polygon points="${cx+68},${cy-10} ${cx+84},${cy-30} ${cx+56},${cy+14}" fill="#7F77DD" stroke="#534AB7" stroke-width="1.5"/>
+     <polygon points="${cx},${cy+38} ${cx-18},${cy+18} ${cx+18},${cy+18}" fill="#7F77DD" stroke="#534AB7" stroke-width="1.5"/>
+     <polygon points="${cx},${cy+38} ${cx-8},${cy+26} ${cx+8},${cy+26}" fill="#534AB7"/>
+     <ellipse cx="${cx-22}" cy="${cy+2}" rx="10" ry="11" fill="#26215C"/>
+     <ellipse cx="${cx-22}" cy="${cy-2}" rx="4.5" ry="5" fill="white"/>
+     <ellipse cx="${cx+22}" cy="${cy+2}" rx="10" ry="11" fill="#26215C"/>
+     <ellipse cx="${cx+22}" cy="${cy-2}" rx="4.5" ry="5" fill="white"/>
+     <path d="M${cx-22} ${cy+22} Q${cx} ${cy+36} ${cx+22} ${cy+22}" stroke="#534AB7" stroke-width="3" fill="none" stroke-linecap="round"/>
+     <path d="M${cx-18} ${cy+27} L${cx-15} ${cy+34} M${cx} ${cy+30} L${cx} ${cy+37} M${cx+18} ${cy+27} L${cx+15} ${cy+34}" stroke="#26215C" stroke-width="2" stroke-linecap="round"/>`,
+    // 6: 상어왕
+    `<ellipse cx="${cx}" cy="${cy+4}" rx="55" ry="35" fill="#FAC775" stroke="#BA7517" stroke-width="2.5"/>
+     <polygon points="${cx},${cy-68} ${cx-26},${cy-10} ${cx+26},${cy-10}" fill="#EF9F27" stroke="#BA7517" stroke-width="2.5"/>
+     <polygon points="${cx-70},${cy-12} ${cx-86},${cy-34} ${cx-58},${cy+14}" fill="#EF9F27" stroke="#BA7517" stroke-width="2"/>
+     <polygon points="${cx+70},${cy-12} ${cx+86},${cy-34} ${cx+58},${cy+14}" fill="#EF9F27" stroke="#BA7517" stroke-width="2"/>
+     <polygon points="${cx},${cy+40} ${cx-20},${cy+18} ${cx+20},${cy+18}" fill="#EF9F27" stroke="#BA7517" stroke-width="2"/>
+     <polygon points="${cx},${cy+40} ${cx-8},${cy+27} ${cx+8},${cy+27}" fill="#BA7517"/>
+     <polygon points="${cx-40},${cy-50} ${cx-46},${cy-62} ${cx-32},${cy-54}" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
+     <polygon points="${cx+40},${cy-50} ${cx+46},${cy-62} ${cx+32},${cy-54}" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
+     <polygon points="${cx},${cy-64} ${cx-6},${cy-76} ${cx+6},${cy-76}" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
+     <ellipse cx="${cx-24}" cy="${cy+2}" rx="11" ry="12" fill="#412402"/>
+     <ellipse cx="${cx-24}" cy="${cy-2}" rx="5" ry="5.5" fill="white"/>
+     <ellipse cx="${cx-24}" cy="${cy-2}" rx="2" ry="2.5" fill="#412402"/>
+     <ellipse cx="${cx+24}" cy="${cy+2}" rx="11" ry="12" fill="#412402"/>
+     <ellipse cx="${cx+24}" cy="${cy-2}" rx="5" ry="5.5" fill="white"/>
+     <ellipse cx="${cx+24}" cy="${cy-2}" rx="2" ry="2.5" fill="#412402"/>
+     <path d="M${cx-24} ${cy+24} Q${cx} ${cy+40} ${cx+24} ${cy+24}" stroke="#BA7517" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+     <path d="M${cx-20} ${cy+29} L${cx-17} ${cy+36} M${cx} ${cy+33} L${cx} ${cy+40} M${cx+20} ${cy+29} L${cx+17} ${cy+36}" stroke="#412402" stroke-width="2.5" stroke-linecap="round"/>`,
+  ];
+
+  svg.innerHTML = svgs[Math.min(idx, svgs.length - 1)];
+}
+
+// ── RENDER EVO STAGES ──────────────────────────────────────
+function renderEvoStages() {
+  const currentIdx = getStageIndex(totalVolume);
+  const container = document.getElementById('evoStages');
+  container.innerHTML = STAGES.map((s, i) => {
+    const reached = i < currentIdx;
+    const current = i === currentIdx;
+    const locked = i > currentIdx;
+    const cls = reached ? 'reached' : current ? 'current' : 'locked';
+    return `<div class="evo-item ${cls}">
+      <div class="evo-num">${i+1}</div>
+      <div class="evo-shark-mini">${s.emoji}</div>
+      <div class="evo-info">
+        <div class="evo-name">${s.name}</div>
+        <div class="evo-req">${s.minVol === 0 ? '시작 단계' : '$' + s.minVol.toLocaleString('en')}</div>
+      </div>
+      ${reached ? '<div class="evo-check">✓</div>' : current ? '<div class="evo-check" style="color:var(--accent)">▶</div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── UI HELPERS ─────────────────────────────────────────────
+function setRefreshSpinning(on) {
+  document.getElementById('refreshBtn').classList.toggle('spinning', on);
+}
+function showApiError(msg) {
+  const el = document.getElementById('apiError');
+  document.getElementById('apiErrorMsg').textContent = msg;
+  el.classList.add('visible');
+}
+function hideApiError() {
+  document.getElementById('apiError').classList.remove('visible');
+}
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
