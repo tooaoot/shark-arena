@@ -4,1184 +4,1008 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shark Arena — Pacifica</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@fuul/sdk/dist/index.umd.js"></script>
 <style>
-  :root {
-    --bg: #060810;
-    --surface: #0d1120;
-    --surface2: #141828;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.13);
-    --text: #f0f2ff;
-    --muted: #5a6080;
-    --accent: #00e5a0;
-    --accent2: #0099ff;
-    --amber: #ffb800;
-    --red: #ff4455;
-    --purple: #9b6dff;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+:root {
+  --bg:#080c14;--bg2:#0d1420;--bg3:#111926;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#f0f4ff;--text2:#8899bb;--text3:#4a5a7a;
+  --teal:#00e5b0;--teal2:#00b388;--blue:#3b82f6;
+  --amber:#f59e0b;--red:#ef4444;--purple:#a78bfa;
+  --r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;overflow-x:hidden}
 
-  /* GRID BG */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+/* ── 수조관 배경 ── */
+.aquarium-bg{
+  position:fixed;inset:0;z-index:0;overflow:hidden;
+  background:linear-gradient(180deg,#010d1a 0%,#011a2e 25%,#012440 50%,#011a2e 75%,#010d1a 100%);
+}
+/* 수조 유리 반사 효과 */
+.aquarium-bg::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% 0%,rgba(0,100,180,0.18) 0%,transparent 70%),
+    radial-gradient(ellipse 60% 30% at 20% 50%,rgba(0,180,150,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 60% at 80% 60%,rgba(0,80,160,0.1) 0%,transparent 70%);
+  pointer-events:none;
+}
+/* 수면 빛 굴절 */
+.aquarium-bg::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:180px;
+  background:linear-gradient(180deg,rgba(0,180,255,0.07) 0%,transparent 100%);
+  pointer-events:none;
+}
 
-  /* HEADER */
-  header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-    height: 64px;
-    background: rgba(6,8,16,0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-  }
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-  }
-  .logo-shark { font-size: 22px; }
-  .logo span { color: var(--accent); }
-  .header-right { display: flex; align-items: center; gap: 12px; }
-  .network-badge {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 10px;
-    border: 1px solid var(--border2);
-    border-radius: 20px;
-    font-size: 12px;
-    font-family: 'Space Mono', monospace;
-    color: var(--muted);
-  }
-  .net-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 6px var(--accent);
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+/* 물 caustic 빛 패턴 */
+.caustic{
+  position:absolute;inset:0;pointer-events:none;opacity:0.07;
+  background-image:
+    radial-gradient(ellipse 3px 8px at 10% 20%, rgba(100,220,255,1) 0%, transparent 100%),
+    radial-gradient(ellipse 8px 3px at 25% 45%, rgba(100,220,255,1) 0%, transparent 100%),
+    radial-gradient(ellipse 4px 10px at 40% 15%, rgba(100,220,255,1) 0%, transparent 100%),
+    radial-gradient(ellipse 6px 4px at 55% 60%, rgba(100,220,255,1) 0%, transparent 100%),
+    radial-gradient(ellipse 3px 7px at 70% 30%, rgba(100,220,255,1) 0%, transparent 100%),
+    radial-gradient(ellipse 9px 3px at 85% 50%, rgba(100,220,255,1) 0%, transparent 100%),
+    radial-gradient(ellipse 5px 9px at 15% 70%, rgba(100,220,255,1) 0%, transparent 100%),
+    radial-gradient(ellipse 7px 5px at 35% 85%, rgba(100,220,255,1) 0%, transparent 100%),
+    radial-gradient(ellipse 4px 8px at 60% 75%, rgba(100,220,255,1) 0%, transparent 100%),
+    radial-gradient(ellipse 8px 4px at 80% 90%, rgba(100,220,255,1) 0%, transparent 100%),
+    radial-gradient(ellipse 3px 6px at 92% 20%, rgba(100,220,255,1) 0%, transparent 100%),
+    radial-gradient(ellipse 6px 3px at 5% 90%, rgba(100,220,255,1) 0%, transparent 100%);
+  animation:causticShift 8s ease-in-out infinite alternate;
+}
+@keyframes causticShift{
+  0%{transform:translate(0,0) scale(1);}
+  50%{transform:translate(8px,-6px) scale(1.05);}
+  100%{transform:translate(-4px,8px) scale(0.97);}
+}
 
-  /* WALLET BUTTON */
-  .wallet-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 18px;
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .wallet-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .wallet-btn.connected {
-    border-color: var(--accent);
-    background: rgba(0,229,160,0.08);
-    color: var(--accent);
-  }
-  .wallet-icon { font-size: 16px; }
+/* 기포 */
+.bubble{
+  position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, rgba(255,255,255,0.6), rgba(100,200,255,0.1));
+  border:1px solid rgba(100,200,255,0.3);
+  animation:bubbleRise linear infinite;
+  pointer-events:none;
+}
+@keyframes bubbleRise{
+  0%{transform:translateY(0) translateX(0);opacity:0;}
+  10%{opacity:.7;}
+  90%{opacity:.4;}
+  100%{transform:translateY(-100vh) translateX(var(--drift));opacity:0;}
+}
 
-  /* WALLET MODAL */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(8px);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border2);
-    border-radius: 16px;
-    padding: 2rem;
-    width: 360px;
-    animation: slideUp 0.2s ease;
-  }
-  @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
-  .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
-  .modal p { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
-  .modal-close {
-    position: absolute;
-    top: 1rem; right: 1rem;
-    background: none; border: none;
-    color: var(--muted); font-size: 20px; cursor: pointer;
-  }
-  .wallet-option {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .wallet-option:hover { border-color: var(--accent); background: rgba(0,229,160,0.05); }
-  .wallet-option-icon { width: 40px; height: 40px; border-radius: 10px; display:flex; align-items:center; justify-content:center; font-size:22px; }
-  .wallet-option-info .w-name { font-size: 15px; font-weight: 600; }
-  .wallet-option-info .w-sub { font-size: 12px; color: var(--muted); }
+/* 해초 */
+.seaweed{
+  position:absolute;bottom:0;width:18px;
+  transform-origin:bottom center;
+  animation:sway 4s ease-in-out infinite;
+  pointer-events:none;
+}
+.seaweed-seg{
+  width:100%;border-radius:50% 50% 0 0 / 60% 60% 0 0;
+  margin-bottom:-4px;
+}
+@keyframes sway{
+  0%,100%{transform:rotate(-8deg);}
+  50%{transform:rotate(8deg);}
+}
 
-  /* MAIN LAYOUT */
-  main {
-    position: relative;
-    z-index: 1;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
-  }
+/* 수평선 빛 줄기 */
+.light-ray{
+  position:absolute;top:0;width:2px;
+  background:linear-gradient(180deg,rgba(100,220,255,0.15) 0%,transparent 70%);
+  transform-origin:top center;
+  animation:rayWave 6s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes rayWave{
+  0%,100%{transform:rotate(-3deg) scaleY(1);}
+  50%{transform:rotate(3deg) scaleY(1.1);}
+}
 
-  /* CONNECT PROMPT */
-  .connect-prompt {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    text-align: center;
-    gap: 1.5rem;
-  }
-  .connect-shark-big { font-size: 80px; filter: drop-shadow(0 0 40px rgba(0,229,160,0.3)); animation: float 3s ease-in-out infinite; }
-  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-  .connect-prompt h1 { font-size: 36px; font-weight: 800; }
-  .connect-prompt h1 span { color: var(--accent); }
-  .connect-prompt p { font-size: 15px; color: var(--muted); max-width: 400px; line-height: 1.6; }
-  .connect-big-btn {
-    padding: 14px 32px;
-    background: var(--accent);
-    color: #060810;
-    border: none;
-    border-radius: 10px;
-    font-family: 'Syne', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 0.5rem;
-  }
-  .connect-big-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,229,160,0.3); }
+/* 작은 물고기들 */
+.fish{
+  position:absolute;pointer-events:none;font-size:16px;
+  animation:fishSwim linear infinite;
+  opacity:0.5;
+}
+@keyframes fishSwim{
+  0%{transform:translateX(-60px);}
+  100%{transform:translateX(calc(100vw + 60px));}
+}
+.fish.left{animation-direction:reverse;}
 
-  /* DASHBOARD */
-  .dashboard { display: none; }
-  .dashboard.visible { display: block; }
+.orb{display:none}
+.app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 80px}
 
-  /* WALLET INFO BAR */
-  .wallet-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-    font-family: 'Space Mono', monospace;
-    font-size: 13px;
-  }
-  .wallet-bar-addr { color: var(--accent); flex: 1; }
-  .wallet-bar-net { color: var(--muted); }
-  .copy-btn {
-    background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px;
-    transition: color 0.2s;
-  }
-  .copy-btn:hover { color: var(--accent); }
+/* HEADER */
+header{display:flex;align-items:center;justify-content:space-between;padding:20px 0 24px;position:relative;z-index:2}
+.logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;letter-spacing:-0.5px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--teal),var(--blue));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo em{color:var(--teal);font-style:normal}
+#walletBtn{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+#walletBtn:hover{border-color:var(--teal);color:var(--teal)}
+#walletBtn.connected{border-color:var(--teal);background:rgba(0,229,176,0.08);color:var(--teal)}
+.wdot{width:7px;height:7px;border-radius:50%;background:var(--text3);transition:background .2s}
+#walletBtn.connected .wdot{background:var(--teal);box-shadow:0 0 6px var(--teal)}
 
-  /* STATS GRID */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0,1fr));
-    gap: 12px;
-    margin-bottom: 1.5rem;
-  }
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.2s;
-  }
-  .stat-card:hover { border-color: var(--border2); }
-  .stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
-  .stat-card.teal::before { background: linear-gradient(90deg, var(--accent), transparent); }
-  .stat-card.blue::before { background: linear-gradient(90deg, var(--accent2), transparent); }
-  .stat-card.amber::before { background: linear-gradient(90deg, var(--amber), transparent); }
-  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-  .stat-value { font-size: 22px; font-weight: 700; font-family: 'Space Mono', monospace; }
-  .stat-value.green { color: var(--accent); }
-  .stat-value.blue { color: var(--accent2); }
-  .stat-value.amber { color: var(--amber); }
-  .stat-value.red { color: var(--red); }
-  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; font-family: 'Space Mono', monospace; }
-  .loading-val { color: var(--muted); animation: blink 1s infinite; }
-  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center}
+.overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:28px 24px;width:320px;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal h3{font-size:16px;font-weight:600;margin-bottom:6px}
+.modal p{font-size:13px;color:var(--text2);margin-bottom:20px}
+.wopt{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;cursor:pointer;margin-bottom:10px;transition:all .2s}
+.wopt:hover{border-color:var(--teal);background:rgba(0,229,176,0.06)}
+.wopt-logo{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.wopt strong{display:block;font-size:14px;font-weight:600}
+.wopt span{font-size:12px;color:var(--text2)}
+.modal-close{width:100%;margin-top:8px;padding:12px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:13px;cursor:pointer}
+.modal-close:hover{color:var(--text)}
 
-  /* MAIN GRID */
-  .main-grid {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
-  }
+/* CARDS */
+.card{background:rgba(8,18,34,0.75);backdrop-filter:blur(12px);border:1px solid rgba(0,150,200,0.15);border-radius:var(--r);padding:20px;margin-bottom:12px;position:relative;overflow:hidden}
+.card-glow::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--teal),transparent);opacity:.5}
+.sec-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
 
-  /* SHARK CARD */
-  .shark-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .shark-card::after {
-    content: '';
-    position: absolute;
-    bottom: -40px; left: 50%;
-    transform: translateX(-50%);
-    width: 200px; height: 200px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(0,229,160,0.06) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .shark-stage-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: var(--muted);
-    margin-bottom: 1rem;
-  }
-  .shark-canvas {
-    width: 160px;
-    height: 160px;
-    margin-bottom: 1rem;
-  }
-  .shark-name {
-    font-size: 22px;
-    font-weight: 800;
-    margin-bottom: 4px;
-    text-align: center;
-  }
-  .shark-vol-needed {
-    font-size: 12px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-    margin-bottom: 1.2rem;
-    text-align: center;
-  }
+/* SHARK CARD */
+.shark-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.stage-badge{font-size:11px;font-weight:600;letter-spacing:.5px;padding:4px 10px;border-radius:20px;border:1px solid}
+.shark-visual{display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+#sharkSvg{width:160px;height:160px;transition:filter .5s}
+.shark-name{text-align:center;font-size:22px;font-weight:700;margin-bottom:4px}
+.shark-next{text-align:center;font-size:13px;color:var(--text2);margin-bottom:20px}
+.prog-row{margin-bottom:0}
+.prog-labels{display:flex;justify-content:space-between;margin-bottom:6px}
+.prog-labels span:first-child{font-size:12px;color:var(--text2)}
+.prog-labels span:last-child{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--teal)}
+.prog-track{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--blue));transition:width .8s cubic-bezier(.4,0,.2,1)}
 
-  /* PROGRESS */
-  .progress-section { width: 100%; }
-  .progress-item { margin-bottom: 12px; }
-  .progress-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
-  .progress-header .p-label { color: var(--muted); }
-  .progress-header .p-val { font-family: 'Space Mono', monospace; font-weight: 700; }
-  .progress-track {
-    height: 5px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 1s cubic-bezier(0.4,0,0.2,1);
-  }
-  .fill-accent { background: var(--accent); }
-  .fill-blue { background: var(--accent2); }
-  .fill-amber { background: var(--amber); }
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat-card{background:rgba(8,18,34,0.7);backdrop-filter:blur(8px);border:1px solid rgba(0,150,200,0.12);border-radius:14px;padding:16px}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.stat-value{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.c-teal{color:var(--teal)}.c-text{color:var(--text)}
 
-  /* EVO PANEL */
-  .evo-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-  }
-  .panel-title {
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: var(--muted);
-    margin-bottom: 1rem;
-  }
-  .evo-stages { display: flex; flex-direction: column; gap: 6px; }
-  .evo-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    transition: all 0.2s;
-  }
-  .evo-item.reached { border-color: rgba(0,229,160,0.2); background: rgba(0,229,160,0.04); }
-  .evo-item.current { border-color: var(--accent); background: rgba(0,229,160,0.08); }
-  .evo-item.locked { opacity: 0.4; }
-  .evo-num {
-    width: 24px; height: 24px;
-    border-radius: 50%;
-    border: 1px solid var(--border2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700;
-    color: var(--muted);
-    flex-shrink: 0;
-  }
-  .evo-item.reached .evo-num, .evo-item.current .evo-num {
-    background: var(--accent); border-color: var(--accent); color: #060810;
-  }
-  .evo-shark-mini { font-size: 20px; flex-shrink: 0; }
-  .evo-info { flex: 1; }
-  .evo-name { font-size: 13px; font-weight: 600; }
-  .evo-req { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
-  .evo-check { font-size: 14px; color: var(--accent); }
+/* STREAK */
+.streak-row{display:flex;gap:8px}
+.sday{flex:1;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-size:10px;color:var(--text3);gap:4px;transition:all .2s}
+.sday .dl{font-size:9px;text-transform:uppercase;letter-spacing:.3px}
+.sday .dc{font-size:14px}
+.sday.done{border-color:rgba(0,229,176,.3);background:rgba(0,229,176,.07)}
+.sday.done .dc,.sday.today .dc{color:var(--teal)}
+.sday.done .dl{color:var(--teal2)}
+.sday.today{border-color:var(--teal);background:rgba(0,229,176,.12)}
+.sday.today .dl{color:var(--teal);font-weight:600}
+.streak-info{margin-top:12px;font-size:13px;color:var(--text2);text-align:center}
+.streak-info strong{color:var(--amber)}
 
-  /* STREAK CARD */
-  .streak-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-  }
-  .streak-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-  .streak-count { font-size: 28px; font-weight: 800; color: var(--amber); font-family: 'Space Mono', monospace; }
-  .streak-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-  .streak-days { display: flex; gap: 8px; }
-  .day-cell {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-  .day-label { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; }
-  .day-dot {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-  }
-  .day-dot.done { background: rgba(0,229,160,0.15); border-color: var(--accent); }
-  .day-dot.today { background: var(--accent); border-color: var(--accent); }
-  .day-dot.missed { background: rgba(255,68,85,0.1); border-color: rgba(255,68,85,0.3); }
+/* EGG */
+.egg-card{display:flex;align-items:center;gap:16px}
+.egg-icon{font-size:40px;line-height:1;flex-shrink:0}
+.egg-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.egg-sub{font-size:13px;color:var(--text2)}
+.egg-tag{display:inline-block;margin-top:8px;font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
 
-  /* EGG REWARD CARD */
-  .egg-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-  }
-  .egg-inner { display: flex; align-items: center; gap: 1rem; }
-  .egg-icon { font-size: 48px; filter: drop-shadow(0 0 12px rgba(0,229,160,0.3)); }
-  .egg-body { flex: 1; }
-  .egg-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-  .egg-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
-  .egg-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-  .egg-tag {
-    font-size: 11px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-family: 'Space Mono', monospace;
-  }
-  .tag-green { background: rgba(0,229,160,0.12); color: var(--accent); }
-  .tag-amber { background: rgba(255,184,0,0.12); color: var(--amber); }
+/* EVO LIST */
+.evo-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.evo-item:last-child{border-bottom:none}
+.evo-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:2px solid var(--border2);background:var(--bg3)}
+.evo-dot.reached{background:var(--teal);border-color:var(--teal);box-shadow:0 0 6px var(--teal)}
+.evo-dot.current{background:var(--amber);border-color:var(--amber);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 6px var(--amber)}50%{box-shadow:0 0 14px var(--amber)}}
+.evo-name{font-size:13px;font-weight:500;flex:1}
+.evo-name.reached{color:var(--teal)}.evo-name.current{color:var(--amber)}.evo-name.locked{color:var(--text3)}
+.evo-vol{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text3)}
+.evo-vol.reached{color:var(--teal2)}
 
-  /* TRADES TABLE */
-  .trades-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-top: 16px;
-  }
-  .trades-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-  .refresh-btn {
-    background: none;
-    border: 1px solid var(--border2);
-    border-radius: 6px;
-    color: var(--muted);
-    font-size: 12px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-family: 'Space Mono', monospace;
-    transition: all 0.2s;
-  }
-  .refresh-btn:hover { color: var(--accent); border-color: var(--accent); }
-  .refresh-btn.spinning { animation: spin 1s linear infinite; }
-  @keyframes spin { to{transform:rotate(360deg)} }
-  .trades-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .trades-table th {
-    text-align: left;
-    font-size: 11px;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 0 12px 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  .trades-table td {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border);
-    font-family: 'Space Mono', monospace;
-    font-size: 12px;
-  }
-  .trades-table tr:last-child td { border-bottom: none; }
-  .side-long { color: var(--accent); }
-  .side-short { color: var(--red); }
-  .empty-state { text-align: center; color: var(--muted); padding: 2rem; font-size: 14px; }
+/* STATES */
+.not-connected{text-align:center;padding:12px 0 32px}
 
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: 10px;
-    padding: 12px 18px;
-    font-size: 14px;
-    z-index: 300;
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.3s;
-    max-width: 300px;
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.success { border-color: var(--accent); }
-  .toast.error { border-color: var(--red); }
+/* 히어로 상어 SVG */
+.hero-shark-wrap{position:relative;width:240px;height:240px;margin:0 auto 4px;animation:heroFloat 3.5s ease-in-out infinite}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.hero-shark-wrap::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:120px;height:16px;background:radial-gradient(ellipse,rgba(0,229,176,0.2) 0%,transparent 70%);border-radius:50%;animation:shadowPulse 3.5s ease-in-out infinite}
+@keyframes shadowPulse{0%,100%{width:120px;opacity:.6}50%{width:80px;opacity:.2}}
+#heroCharImg{width:240px;height:240px;object-fit:contain}
 
-  /* ERROR BANNER */
-  .api-error {
-    display: none;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    background: rgba(255,68,85,0.07);
-    border: 1px solid rgba(255,68,85,0.2);
-    border-radius: 10px;
-    margin-bottom: 1rem;
-    font-size: 13px;
-    color: var(--red);
-  }
-  .api-error.visible { display: flex; }
+/* 타이틀 */
+.hero-title{font-size:32px;font-weight:700;line-height:1.15;letter-spacing:-1px;margin-bottom:10px}
+.hero-title span{color:var(--teal)}
+.hero-sub{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:28px;max-width:320px;margin-left:auto;margin-right:auto}
 
-  @media (max-width: 768px) {
-    .main-grid { grid-template-columns: 1fr; }
-    .stats-grid { grid-template-columns: 1fr 1fr; }
-  }
+/* 스탯 배지 3개 */
+.hero-stats{display:flex;gap:8px;justify-content:center;margin-bottom:28px}
+.hero-stat{background:rgba(8,18,34,0.65);backdrop-filter:blur(8px);border:1px solid rgba(0,180,220,0.2);border-radius:12px;padding:10px 14px;text-align:center;flex:1}
+.hero-stat-val{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--teal)}
+.hero-stat-label{font-size:10px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+
+/* 연결 버튼 */
+.connect-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 36px;background:var(--teal);color:#000;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:14px;cursor:pointer;transition:all .25s;box-shadow:0 0 28px rgba(0,229,176,0.25)}
+.connect-btn:hover{background:var(--teal2);transform:translateY(-2px);box-shadow:0 0 40px rgba(0,229,176,0.4)}
+.connect-btn-icon{font-size:18px}
+
+/* 진화 미리보기 */
+.hero-preview{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:24px;flex-wrap:wrap}
+.preview-stage{display:flex;flex-direction:column;align-items:center;gap:4px;opacity:.5;transition:opacity .2s}
+.preview-stage:hover{opacity:1}
+.preview-stage .ps-emoji{font-size:20px}
+.preview-stage .ps-line{width:1px;height:16px;background:var(--border2)}
+.preview-arrow{color:var(--text3);font-size:12px;margin-bottom:20px}
+.loading-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:48px 24px;text-align:center;display:none}
+.spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--text2)}
+.error-banner{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:12px 16px;font-size:13px;color:#fca5a5;margin-bottom:12px;display:none}
+.refresh-btn{width:100%;padding:12px;background:transparent;border:1px solid var(--border2);border-radius:12px;color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;margin-bottom:12px;display:none}
+.refresh-btn:hover{border-color:var(--teal);color:var(--teal)}
+.refresh-btn.show{display:block}
+
+footer{text-align:center;padding:24px 0 0;font-size:12px;color:var(--text3)}
+footer a{color:var(--teal);text-decoration:none}
 </style>
 </head>
 <body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
 
-<!-- HEADER -->
-<header>
-  <div class="logo">
-    <span class="logo-shark">🦈</span>
-    Shark<span>Arena</span>
-  </div>
-  <div class="header-right">
-    <div class="network-badge">
-      <div class="net-dot"></div>
-      Solana Mainnet
-    </div>
-    <button class="wallet-btn" id="walletBtn" onclick="openWalletModal()">
-      <span class="wallet-icon">👛</span>
-      지갑 연결
-    </button>
-  </div>
-</header>
-
-<!-- WALLET MODAL -->
-<div class="modal-overlay" id="walletModal">
-  <div class="modal" style="position:relative;">
-    <button class="modal-close" onclick="closeWalletModal()">✕</button>
+<!-- Wallet Modal -->
+<div class="overlay" id="walletModal">
+  <div class="modal">
     <h3>지갑 연결</h3>
-    <p>Pacifica DEX와 연동할 지갑을 선택하세요</p>
-    <div class="wallet-option" onclick="connectWallet('phantom')">
-      <div class="wallet-option-icon" style="background:rgba(171,120,255,0.15);">👻</div>
-      <div class="wallet-option-info">
-        <div class="w-name">Phantom</div>
-        <div class="w-sub">Solana 전용 지갑</div>
-      </div>
+    <p>Solana 지갑을 선택해 연결하세요.</p>
+    <div class="wopt" onclick="connectWallet('phantom')">
+      <div class="wopt-logo" style="background:#4E44CE">👻</div>
+      <div><strong>Phantom</strong><span>Solana 지갑</span></div>
     </div>
-    <div class="wallet-option" onclick="connectWallet('solflare')">
-      <div class="wallet-option-icon" style="background:rgba(255,140,0,0.15);">☀️</div>
-      <div class="wallet-option-info">
-        <div class="w-name">Solflare</div>
-        <div class="w-sub">Solana 전용 지갑</div>
-      </div>
+    <div class="wopt" onclick="connectWallet('solflare')">
+      <div class="wopt-logo" style="background:#FC7227">🔥</div>
+      <div><strong>Solflare</strong><span>Solana 지갑</span></div>
     </div>
+    <button class="modal-close" onclick="closeModal()">닫기</button>
   </div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
-<!-- MAIN -->
-<main>
-
-  <!-- CONNECT PROMPT -->
-  <div class="connect-prompt" id="connectPrompt">
-    <div class="connect-shark-big">🦈</div>
-    <h1>상어로 <span>진화</span>하세요</h1>
-    <p>Pacifica DEX에서 거래하고 상어를 진화시키세요. 거래량에 따라 7단계 상어로 성장합니다.</p>
-    <button class="connect-big-btn" onclick="openWalletModal()">지갑 연결하기</button>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div class="dashboard" id="dashboard">
-
-    <!-- WALLET BAR -->
-    <div class="wallet-bar">
-      <span style="color:var(--muted); font-size:12px;">연결된 지갑</span>
-      <span class="wallet-bar-addr" id="walletAddr">—</span>
-      <button class="copy-btn" onclick="copyAddr()" title="주소 복사">📋</button>
-      <span class="wallet-bar-net" style="font-size:12px;">Solana</span>
-      <button onclick="disconnect()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;">연결 해제</button>
+<div class="app">
+  <header>
+    <div class="logo">
+      <div class="logo-icon" style="background:none;padding:0;overflow:hidden"><img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAClAJgDASIAAhEBAxEB/8QAHAABAAICAwEAAAAAAAAAAAAAAAcIBQYBAwQC/8QARBAAAQMDAQUFBAYHBQkAAAAAAQACAwQFEQYHEiExQRNRYXGBCCKRsRQjMnKhwRUWM0JSksJigrLR8DZDRFRVc5Oi4f/EABsBAQACAwEBAAAAAAAAAAAAAAAEBQIDBgcB/8QALhEAAgICAAQDBwQDAAAAAAAAAAECAwQRBRIhMUFRcQYTImGRsfAyM4HRFBVS/9oADAMBAAIRAxEAPwCqiIimkcIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAInqCe7qpO2cbHb/qeKK4XBxtNsfxbJIzMsje9rD08Tj1WddcrHqKNN+RVjw57HpEY8lkbVYL9dm71rstxrm5xvU9M+QfEBW20psx0bpyJn0W0xVM7f+Iqx2shPfx4D0AW5NaGNDYxutHIABTocPb/Uznb/AGkgnqqG/UohdLbcLVVuornQ1FFUtALop4yx4B5HB4ryqU/aiiEe1Fr2jHaWyB3n78g/JRYoNkFCbivA6DFud9MbGtbQREWBICIiAIiIAiIgCIiAIiIAnDkSPFFKvs6aHj1JqB17uNMJbbbXghr2+7LNjIHiGjifMLOuDskoo0ZORDGqlbPsjb9huySKKKHU2qaUSSvDZKOilGQwcw94PMnoDyU6gADA5Dkn5cEV9TTGqOked5mZZl2Oc36fIIixOodS2DT0PaXu7UlCD9kSSDed5N5n0CzckupGhCU3qK2yvftYRbu0K3TdH2pjfhLIf6lECnXapaqnazd6W66EdBcqSghNNUPc/st2Qu3gBvYzwKj257LdoFA1736Yq5mN4l0BbLw8mnP4KlyISlY5RXQ77huRXXjQrsklJLs31NMRdtVTVFLM6Grgmp5BzZLGWOHoV1KNotk0+wREXwBERAEREAREQBERActa9zg1oyXEADvJP+grrbNNPx6Y0TbLQGBsscIfOf4pHDLifU49FU/ZPbGXjaPYqGVu/E6rbJIOhazL8eu7j1V0lZ4EN7kcp7S3v4KV6/0FznC4Wt7TdR/qroa6XlnGoji3Kcd8jiGt+BOfIKxlJRTbOXqrds1CPd9CO9uG1p9jqJNOaakZ+kR7tVVfaEH9lvTf48T08+VdK2rqq6rdV1tRLUVDzl0sri5x9SviomlqKiSed7pJZHFz3OPFzieJK+BzVDddK2W2ejYGDXh1qMF18X5liPZFlzZNQQdWVMTvi1w/pU5KAfZDf/tNFn/lXY/8qn1W+G90o4vja1mz/j7Ixt/sNmv0HYXe2UtcwjA7WIEjydzChTaLsGaBJXaMnd1c6gqHcvuPPyPxU+os7KIWLqiNi8QyMV7hLp5eBQytpamiqpKOrp5YJ4XFkkcrd1zHDoQulW62vbNrfrS3uqaUR0l5hb9TU/xgfuPxzB7+YVTblQ1dsr57fXQPgqYHmOWJw4tcDxVNfRKmWvA7rh3EYZte10ku6POiItBYBERAFyxj3vaxjHPc44DWjJJPIAdVws5s/q4rfruwV0zh2UNyp3PzyA7RuT6DK+xW3oxnJxi2vA80OnNRzDMOnbxL/wBugld8mr1w6L1jN9jSd+/vW+Vvzaruce/PHmis/wDXx/6OSl7TWeFa+pVzZBYLzpHXFJqDVVrqrPaaeOQSVVWzcYxzmlrcnxJwpwm2pbPos72qaE457m+//C0r17V7NJqDZ3erVCN6eSnMkQPV7CHtHqWgeqpaftYIIIPUYKxnOWJ8MeqZtopr41u616a6aXl+b+hbyTbFs4YcfrGHfdo5z/Qom277T7Xqu2U9jsImko2TCaaeRhYHuaODWg8cDOcnwUOdc9y+o2Plk3WML3O4BrWkknwAWizMssjysssbgeNjWKxNtrzEMck8zYY2l8sjg1jQOLiTgD5LMa107W6V1HUWSvG9NAGu3gMB4c3IIzzHT0Kl/YRsqroLpTan1LRmlbB9ZS0k323O6Pe393HMA8crc9uezZ+s6KO4WoRMvNI0tZ2hwJ4+YYT0wckHzSOJJ1uWupjbxmqGWqt/D4v5kG7GdeN0Lfp56imlqaKsjEdQyMjeGDlrhnqMu4dcqxGmNq2h9QVLKWnu4pal/ARVkZiJPcCfdJ8MqpF4tlwtNdJQXSino6iM4dHKwg//AELyHjnI58/FfKsmyn4TZmcJx81+83p+aL88xkEEd+RhByVXtjG1au09Xw2fUFTNVWaUhjXv951Ke8E8S3vHTmFZ+KRkjGvY5sjHjea9p4EHuVrRkRtW0cbn8PswrOWXVPsz6UI+03omGptQ1hQQYqqYBlcG/wC8j5NefFp693kpuXTcKWnrqCooquJstPUROikY4ZDmuGCPgsrq1ZFxZhg5UsW5WL8RQxFk9V2qSxaluFnm3i6kqHRAu5uAPA+owVjFz7Wno9JjJSipLswiIvhkEB3SDnGDnPcieI5oC72gr0zUOjrXd2Oz9Ip2l47njg78QVm1Xj2XNXClqqjSNbL9XUuNRRlx5Px77PUDPoVYjoD3q/x7VZWmeb8SxXi5EoeHdehwqv7f9nNTp+7z6jtkG/Z6t+/I1gyaaQ88/wBknkfHCtAvieGOeGWCdjZYpG7ro3tBa4HnkdR4JfQrY6Y4fnTwreePZ90UJWa0fqi76TuYuVnfA2bgCJYWva4Z5ceI8wQVYDWuwewXaZ9VYK19mlcSXQ7naQOPgMgs9DjwUNbR9muoNEQxVVe+CropX9myenzhrueHAjhn8iqmePZV10drj8TxMxcm+r8GWC2S7ULdrZho5420N4iZvvpw7LJAObmdfMcxlZ/aBrK0aLsRudzcXucd2CBn25n9wHzPRU407d6yw3yjvFBIWVFLK2Vhzwd3tPgRwPhlbNti1mdaaufX08jxb4WNipWHhgboLzjvLifgFIjmv3fXuVdnAIPKXL0h3f8AX8nO0baTftal9PVx0tPQB2Y4I4gS3HL3z7xPqB4LSfxWc0Tpi5auv8VntjWdq9pe97zhsbBzc7wUuQ+znUFo7bVkbTjju0JOPLMgUVV23bklst55WHgJVNqPyIHVq/Zs1HJe9AChqZDJUWuQ07ieseN5h+BI/urV4PZzpG/t9WzyfcoGt+byuu9RHYLSxzWaR16N5fuStrBuNjMY4Fu797qpNFdmPLnn2KvPysbiVfuKXue+n56E9pkjljPiqzze0Hqlw+ps1mZ99sjvk4LySbftduGGU9ij8qSQ/OVSXnVFQvZ7Mfl9To9pq2sotqD52ZLa+kiqD94ZYf8AAovWf1vq68ayusdyvj4XzRQiFghj3GhoJOMZPUlYBVVslKbaOyw6p1UQhZ3SCIi1kkIiIDspaiakqoaunldFPC8SRyNOC1wOQR4q22x3aLR61tIgqJGRXqmYPpMJ4b/D9o3wPUdFUXoR3r1Wm41tquMNwt1XLS1cJ3o5YzgtP+SkUXuqW/Ar+JcPhm18r6SXZl7/AIIoc2Z7b7XdY4rbqox2+44DPpWCIZXd5/gJ8eHj0UwwSRTRNmhkbJE4Za9rgQfLHNXVd0LFuLOCysO7Fly2R19j7Cjz2i4w/ZHdiQCGPgdnHEfXMH5qQlpG3mLtdkWoG4ziGN/8srHfkvl/7cjLAesqt/Nfcp6OXEkoTxJQjBIWz7O9EXbWt4bRUDHR07SDU1Tmnchb+bj0A4/Nc/FOT0j0i2yFcXKb0kS37JtimZS3fUk0WI5i2kp3ObxdukueR4ZLR6FTvxzxOV4NO2ihsNkpLRbmblNSxBkYPM97j4k8T5r3q/or93BRPOOIZX+VkSt8H29Aq7+1vXtdeLBbQ8Ex08s729284Naf/VysQenLvJVOdtN+bqHaRda2JwdBC4UsOOI3GcMjzO8fVaM+eq9eZY+z1Dnlc/hFffoaYiIqY7kIiIAiIgCIiAIiIB0wtg0vrTVGmnj9EXmqp42n9iXb8Z82nIWvovsZOPVMwnXCxcs1tEz2b2hNQwxNZdLJb60t5yRPdC4jxHEfDCzE21ql2hQO0QLLNQSXrFI2pdKJGRF3He3cAnkoAWx7LpRDtI03If8AqcDf5nhv5qRHJsbUW+hWXcKxYJ2QhprqvUnHTvs/afpJ2zXq61l03TkQtaIYz54y4+hClmz2u3We3x0FrooKOmj4NjibgD/M+K9p5rhXEKYV/pRxOTm35P7stnJ4nJRcLC6y1NadKWOW7XecRxN4MjGO0lceTWjvP4c1slJRW2R4QlZJRittmt7ctZN0joyb6NJu3SuBgpQObcj3pPQE46ZIVRCSSSTkniT3rYNe6ruOsNRz3ivJYHe5BADlsMfRo/HPeVr6osm/3s/kehcKwVh08r/U+4REUcsgiIgCIiAIiIAiIgCIiALL6Ik7LW2n5T+5daV3wmYsQu2iqJKOtp6yIAyU8rJWZHDLXAjPqET09mM480Wi+p5r5LmgElw3W8z3KsNdt+1rUQuZT0dmpHEftGQve4eW88j8FpGotd6vv4c273yrnjdziaezZ/K3AVvLPgl8KOMq9nMib+NpL6ljtoG2HTOmRJTUE7bvcmjAippBuMd3OkHAeQyVWrWerL3q67uuN6qTI4E9lE3IjiHc0f6JWCx88rlQLsmdvfsdJg8Low+sVuXm/wA6DzREUcsQiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiA/9k=" style="width:36px;height:36px;object-fit:contain;border-radius:10px;" alt="Pacifica"></div>
+      Shark<em>Arena</em>
     </div>
+    <button id="walletBtn" onclick="openModal()">
+      <div class="wdot"></div>
+      <span id="wBtnTxt">지갑 연결</span>
+    </button>
+  </header>
 
-    <!-- API ERROR -->
-    <div class="api-error" id="apiError">
-      ⚠️ <span id="apiErrorMsg">Pacifica API 연결 중 오류가 발생했습니다. CORS 제한으로 인해 데모 데이터를 표시합니다.</span>
-    </div>
+  <div id="errorBanner" class="error-banner"></div>
+  <button id="refreshBtn" class="refresh-btn" onclick="loadData()">↻ 데이터 새로고침</button>
 
-    <!-- STATS -->
-    <div class="stats-grid">
-      <div class="stat-card teal">
-        <div class="stat-label">누적 거래량</div>
-        <div class="stat-value green" id="statVolume"><span class="loading-val">로딩중...</span></div>
-        <div class="stat-sub" id="statVolumeSub">Pacifica DEX 기준</div>
+  <div id="mainContent">
+    <div class="not-connected" id="ncState">
+
+      <!-- 히어로 상어 -->
+      <div class="hero-shark-wrap">
+        <svg id="heroSharkSvg" viewBox="0 0 160 160" style="width:240px;height:240px;filter:drop-shadow(0 0 32px rgba(0,229,176,0.4));">
+          <ellipse cx="80" cy="104" rx="50" ry="34" fill="#9FE1CB" stroke="#1D9E75" stroke-width="2"/>
+          <polygon points="80,28 62,76 98,76" fill="#5DCAA5" stroke="#1D9E75" stroke-width="1.5"/>
+          <polygon points="26,80 10,58 32,100" fill="#5DCAA5" stroke="#1D9E75" stroke-width="1.5"/>
+          <polygon points="134,80 150,58 128,100" fill="#5DCAA5" stroke="#1D9E75" stroke-width="1.5"/>
+          <ellipse cx="58" cy="95" rx="8" ry="9" fill="#085041"/>
+          <ellipse cx="58" cy="92" rx="3.5" ry="4" fill="white"/>
+          <ellipse cx="58" cy="92" rx="1.4" ry="1.6" fill="#085041"/>
+          <ellipse cx="102" cy="95" rx="8" ry="9" fill="#085041"/>
+          <ellipse cx="102" cy="92" rx="3.5" ry="4" fill="white"/>
+          <ellipse cx="102" cy="92" rx="1.4" ry="1.6" fill="#085041"/>
+          <path d="M58 118 Q80 132 102 118" stroke="#1D9E75" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M62 123 L65 131 M80 126 L80 134 M98 123 L95 131" stroke="#085041" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="58" cy="92" r="5" fill="none" stroke="rgba(0,229,176,0.5)" stroke-width="1" opacity="0.6"/>
+          <circle cx="102" cy="92" r="5" fill="none" stroke="rgba(0,229,176,0.5)" stroke-width="1" opacity="0.6"/>
+        </svg>
       </div>
-      <div class="stat-card blue">
-        <div class="stat-label">PnL (미실현)</div>
-        <div class="stat-value blue" id="statPnl"><span class="loading-val">로딩중...</span></div>
-        <div class="stat-sub" id="statPnlSub">현재 포지션 기준</div>
-      </div>
-      <div class="stat-card amber">
-        <div class="stat-label">계정 잔고</div>
-        <div class="stat-value amber" id="statBalance"><span class="loading-val">로딩중...</span></div>
-        <div class="stat-sub" id="statBalanceSub">USDC</div>
-      </div>
-    </div>
 
-    <!-- MAIN GRID -->
-    <div class="main-grid">
+      <!-- 타이틀 -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;">
+        <div style="height:1px;width:40px;background:linear-gradient(90deg,transparent,var(--border2))"></div>
+        <span style="font-size:11px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;">Powered by Pacifica</span>
+        <div style="height:1px;width:40px;background:linear-gradient(90deg,var(--border2),transparent)"></div>
+      </div>
+      <div class="hero-title">거래하고<br><span>상어로 진화</span>하세요</div>
+      <div class="hero-sub">Pacifica DEX에서 거래할수록 상어가 성장합니다.<br>7단계 진화로 상어왕을 목표로 하세요.</div>
 
-      <!-- SHARK CARD -->
-      <div class="shark-card">
-        <div class="shark-stage-label">현재 등급</div>
-        <svg class="shark-canvas" viewBox="0 0 160 160" id="sharkSvg"></svg>
-        <div class="shark-name" id="sharkName">—</div>
-        <div class="shark-vol-needed" id="sharkNextInfo">—</div>
-        <div class="progress-section">
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="p-label">다음 단계까지</span>
-              <span class="p-val" id="progPct">0%</span>
-            </div>
-            <div class="progress-track">
-              <div class="progress-fill fill-accent" id="progBar" style="width:0%"></div>
-            </div>
-          </div>
-          <div class="progress-item">
-            <div class="progress-header">
-              <span class="p-label">상어알 ($10,000)</span>
-              <span class="p-val fill-blue" id="eggPct" style="color:var(--accent2)">0%</span>
-            </div>
-            <div class="progress-track">
-              <div class="progress-fill fill-blue" id="eggBar" style="width:0%"></div>
-            </div>
-          </div>
+      <!-- 스탯 배지 -->
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-val">7</div>
+          <div class="hero-stat-label">진화 단계</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">$10K</div>
+          <div class="hero-stat-label">첫 상어알</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-val">7일</div>
+          <div class="hero-stat-label">알 부활 조건</div>
         </div>
       </div>
 
-      <!-- EVO PANEL -->
-      <div class="evo-panel">
-        <div class="panel-title">진화 로드맵</div>
-        <div class="evo-stages" id="evoStages"></div>
+      <!-- 지갑 연결 버튼 -->
+      <button class="connect-btn" onclick="openModal()">
+        지갑 연결하기
+      </button>
+      <div style="margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <span style="font-size:20px;opacity:.7">👻</span>
+        <span style="font-size:11px;color:var(--text3)">Phantom</span>
+        <span style="color:var(--border2);font-size:11px;">·</span>
+        <span style="font-size:20px;opacity:.7">🔥</span>
+        <span style="font-size:11px;color:var(--text3)">Solflare</span>
       </div>
+
+      <!-- 진화 단계 미리보기 -->
+      <div class="hero-preview">
+        <div class="preview-stage"><div class="ps-emoji">🥚</div><div style="font-size:9px;color:var(--text3)">알</div></div>
+        <div class="preview-arrow">›</div>
+        <div class="preview-stage"><div class="ps-emoji">🐟</div><div style="font-size:9px;color:var(--text3)">베이비</div></div>
+        <div class="preview-arrow">›</div>
+        <div class="preview-stage"><div class="ps-emoji">🦈</div><div style="font-size:9px;color:var(--text3)">청상어</div></div>
+        <div class="preview-arrow">›</div>
+        <div class="preview-stage"><div class="ps-emoji">🦈</div><div style="font-size:9px;color:var(--text3)">함머헤드</div></div>
+        <div class="preview-arrow">›</div>
+        <div class="preview-stage"><div class="ps-emoji">🦈</div><div style="font-size:9px;color:var(--text3)">백상아리</div></div>
+        <div class="preview-arrow">›</div>
+        <div class="preview-stage"><div class="ps-emoji">🦈</div><div style="font-size:9px;color:var(--text3)">메가로돈</div></div>
+        <div class="preview-arrow">›</div>
+        <div class="preview-stage"><div class="ps-emoji">👑</div><div style="font-size:9px;color:var(--amber)">상어왕</div></div>
+      </div>
+
     </div>
 
-    <!-- BOTTOM GRID -->
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+    <div class="loading-card" id="loadState">
+      <div class="spinner"></div>
+      <div class="loading-text">Pacifica에서 데이터 불러오는 중...</div>
+    </div>
+
+    <div id="dashboard" style="display:none">
+
+      <!-- SHARK -->
+      <div class="card card-glow">
+        <div class="shark-header">
+          <div>
+            <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">내 상어</div>
+            <div id="stageBadge" class="stage-badge">알</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:11px;color:var(--text3);margin-bottom:2px">총 거래량</div>
+            <div id="totalVolDisplay" style="font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--teal)">$0</div>
+          </div>
+        </div>
+        <div class="shark-visual"><svg id="sharkSvg" viewBox="0 0 160 160"></svg></div>
+        <div class="shark-name" id="sharkName">상어 알</div>
+        <div class="shark-next" id="sharkNext">베이비 상어까지 $10,000 남음</div>
+        <div class="prog-row">
+          <div class="prog-labels"><span>다음 단계까지</span><span id="progPct">0%</span></div>
+          <div class="prog-track"><div class="prog-fill" id="progBar" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">계정 잔고</div><div class="stat-value c-text" id="balVal">—</div><div class="stat-sub">USDC</div></div>
+        <div class="stat-card"><div class="stat-label">계정 에쿼티</div><div class="stat-value c-teal" id="eqVal">—</div><div class="stat-sub">USDC</div></div>
+        <div class="stat-card"><div class="stat-label">포지션 수</div><div class="stat-value c-text" id="posVal">—</div><div class="stat-sub">개</div></div>
+        <div class="stat-card"><div class="stat-label">마진 사용</div><div class="stat-value c-text" id="mgnVal">—</div><div class="stat-sub">USDC</div></div>
+      </div>
 
       <!-- STREAK -->
-      <div class="streak-card">
-        <div class="streak-header">
-          <div>
-            <div class="streak-count" id="streakNum">0</div>
-            <div class="streak-label">연속 거래일</div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:13px; color:var(--muted);">7일 달성 시</div>
-            <div style="font-size:13px; color:var(--amber); font-weight:600;">상어알 부활 🥚</div>
-          </div>
-        </div>
-        <div class="streak-days" id="streakDays"></div>
+      <div class="card">
+        <div class="sec-label">7일 연속 거래 스트릭</div>
+        <div class="streak-row" id="streakRow"></div>
+        <div class="streak-info" id="streakInfo">데이터 로딩 중...</div>
       </div>
 
-      <!-- EGG REWARD -->
-      <div class="egg-card">
-        <div class="panel-title">상어알 보상</div>
-        <div class="egg-inner">
+      <!-- EGG -->
+      <div class="card">
+        <div class="egg-card">
           <div class="egg-icon" id="eggIcon">🥚</div>
-          <div class="egg-body">
-            <div class="egg-title" id="eggTitle">상어알 획득 조건</div>
-            <div class="egg-desc" id="eggDesc">Pacifica에서 $10,000 거래를 달성하면 상어알을 보상으로 획득합니다.</div>
-            <div class="egg-tags">
-              <span class="egg-tag tag-green">$10,000 거래</span>
-              <span class="egg-tag tag-amber">7일 연속 부활</span>
-            </div>
+          <div>
+            <div class="egg-title" id="eggTitle">상어알 대기 중</div>
+            <div class="egg-sub" id="eggSub">$10,000 거래 달성 시 상어알 획득</div>
+            <div class="egg-tag" id="eggTag">7일 연속 거래 시 부활</div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- TRADES TABLE -->
-    <div class="trades-card">
-      <div class="trades-header">
-        <div class="panel-title" style="margin:0;">최근 거래 내역</div>
-        <button class="refresh-btn" id="refreshBtn" onclick="loadData()">↻ 새로고침</button>
+      <!-- EVO LIST -->
+      <div class="card">
+        <div class="sec-label">진화 로드맵</div>
+        <div id="evoList"></div>
       </div>
-      <table class="trades-table">
-        <thead>
-          <tr>
-            <th>시간</th>
-            <th>마켓</th>
-            <th>방향</th>
-            <th>가격</th>
-            <th>수량</th>
-            <th>거래금액</th>
-          </tr>
-        </thead>
-        <tbody id="tradesBody">
-          <tr><td colspan="6" class="empty-state">거래 내역을 불러오는 중...</td></tr>
-        </tbody>
-      </table>
-    </div>
 
+      <!-- REFERRAL -->
+      <div class="card" id="referralCard" style="display:none">
+        <div class="sec-label">👥 친구 초대 (레퍼럴)</div>
+        <div style="background:rgba(0,229,176,0.06);border:1px solid rgba(0,229,176,0.2);border-radius:12px;padding:14px 16px;margin-bottom:12px;">
+          <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">내 초대 링크</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div id="refLink" style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);word-break:break-all;line-height:1.4;">생성 중...</div>
+            <button id="copyRefBtn" onclick="copyRef()" style="flex-shrink:0;padding:7px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;white-space:nowrap;">복사</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div class="stat-card"><div class="stat-label">초대한 친구</div><div class="stat-value c-teal" id="refUsers">—</div><div class="stat-sub">명</div></div>
+          <div class="stat-card"><div class="stat-label">레퍼럴 거래량</div><div class="stat-value c-teal" id="refVol">—</div><div class="stat-sub">USD</div></div>
+        </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6;">
+          친구가 내 링크로 접속 후 Pacifica에서 거래하면 <span style="color:var(--teal);font-weight:600;">자동 추적</span>됩니다.
+        </div>
+      </div>
+
+      <!-- LEADERBOARD -->
+      <div class="card" id="leaderCard" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div class="sec-label" style="margin:0;">🏆 상어왕 리더보드</div>
+          <div style="font-size:11px;color:var(--text3);">Fuul · 거래량 기준</div>
+        </div>
+        <div id="leaderList">
+          <div style="text-align:center;padding:2rem;color:var(--text3);font-size:13px;">로딩 중...</div>
+        </div>
+        <div id="myRankBar" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(0,229,176,0.07);border:1px solid rgba(0,229,176,0.25);border-radius:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;color:var(--teal);font-weight:600;">내 순위</span>
+            <span id="myRankTxt" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);">—</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
-</main>
+
+  <footer>Powered by <a href="https://pacifica.fi" target="_blank">Pacifica DEX</a> · <a href="https://fuul.xyz" target="_blank" style="color:var(--teal)">Fuul</a> · Shark Arena v1.0</footer>
+</div>
 
 <script>
-// ── CONSTANTS ──────────────────────────────────────────────
-const API_BASE = 'https://api.pacifica.fi/api/v1';
+const API = 'https://api.pacifica.fi';
+// Fuul API 키 — app.fuul.xyz 에서 발급 후 여기에 입력하세요
+const FUUL_API_KEY = 'YOUR_FUUL_API_KEY';
+const FUUL_PROJECT_SLUG = 'pacifica-shark-arena'; // Fuul 프로젝트 슬러그
+
+// Fuul SDK 초기화
+try {
+  if (window.Fuul) {
+    window.Fuul.init({ apiKey: FUUL_API_KEY });
+  }
+} catch(e) { console.warn('Fuul SDK init skipped:', e.message); }
 
 const STAGES = [
-  { name: '상어 알',     minVol: 0,          color: '#378ADD', emoji: '🥚' },
-  { name: '베이비 상어', minVol: 10000,       color: '#1D9E75', emoji: '🐟' },
-  { name: '청상어',      minVol: 100000,      color: '#185FA5', emoji: '🦈' },
-  { name: '함머헤드',    minVol: 500000,      color: '#BA7517', emoji: '🦈' },
-  { name: '백상아리',    minVol: 1000000,     color: '#993C1D', emoji: '🦈' },
-  { name: '메가로돈',    minVol: 3000000,     color: '#534AB7', emoji: '🦈' },
-  { name: '상어 왕',     minVol: 10000000,    color: '#BA7517', emoji: '👑' },
+  {name:'상어 알',    vol:0,         color:'#378ADD',glow:'rgba(55,138,221,.4)'},
+  {name:'베이비 상어',vol:10000,     color:'#00e5b0',glow:'rgba(0,229,176,.4)'},
+  {name:'청상어',     vol:100000,    color:'#3b82f6',glow:'rgba(59,130,246,.4)'},
+  {name:'함머헤드',   vol:500000,    color:'#f59e0b',glow:'rgba(245,158,11,.4)'},
+  {name:'백상아리',   vol:1000000,   color:'#ef4444',glow:'rgba(239,68,68,.4)'},
+  {name:'메가로돈',   vol:3000000,   color:'#a78bfa',glow:'rgba(167,139,250,.4)'},
+  {name:'상어 왕',    vol:10000000,  color:'#fbbf24',glow:'rgba(251,191,36,.5)'},
 ];
 
-// ── STATE ──────────────────────────────────────────────────
-let walletAddr = null;
-let walletType = null;
-let accountData = null;
-let tradesData = [];
-let totalVolume = 0;
-let streakDays = [false,false,false,false,false,false,false];
+let wallet = null;
 
-// ── WALLET MODAL ───────────────────────────────────────────
-function openWalletModal() { document.getElementById('walletModal').classList.add('open'); }
-function closeWalletModal() { document.getElementById('walletModal').classList.remove('open'); }
-document.getElementById('walletModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeWalletModal();
-});
+// ── WALLET ──────────────────────────────────────────────────────────
+function openModal(){document.getElementById('walletModal').classList.add('show')}
+function closeModal(){document.getElementById('walletModal').classList.remove('show')}
+document.getElementById('walletModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
 
-// ── CONNECT WALLET ─────────────────────────────────────────
-async function connectWallet(type) {
-  closeWalletModal();
-  try {
-    let addr = null;
-
-    if (type === 'phantom') {
-      if (!window.solana?.isPhantom) {
-        showToast('Phantom 지갑이 설치되어 있지 않습니다. 설치 후 다시 시도하세요.', 'error');
-        setTimeout(() => window.open('https://phantom.app', '_blank'), 1500);
-        return;
-      }
-      const resp = await window.solana.connect();
-      addr = resp.publicKey.toString();
-    } else if (type === 'solflare') {
-      if (!window.solflare?.isSolflare) {
-        showToast('Solflare 지갑이 설치되어 있지 않습니다. 설치 후 다시 시도하세요.', 'error');
-        setTimeout(() => window.open('https://solflare.com', '_blank'), 1500);
-        return;
-      }
-      await window.solflare.connect();
-      addr = window.solflare.publicKey.toString();
-    }
-
-    if (addr) {
-      walletAddr = addr;
-      walletType = type;
-      onConnected();
-    }
-  } catch (err) {
-    if (err.code === 4001) {
-      showToast('지갑 연결을 취소했습니다.', 'error');
+async function connectWallet(type){
+  closeModal();
+  try{
+    let pubkey=null;
+    if(type==='phantom'){
+      if(!window.solana?.isPhantom){showError('Phantom 지갑이 설치되지 않았습니다. phantom.app에서 설치해주세요.');return;}
+      const r=await window.solana.connect();
+      pubkey=r.publicKey.toString();
     } else {
-      // 개발/데모 환경: 지갑 미설치 시 데모 주소로 진행
-      showToast('데모 모드: 샘플 데이터를 표시합니다.', 'success');
-      walletAddr = 'DEMO' + Math.random().toString(36).substr(2,8).toUpperCase() + '...Pacifica';
-      walletType = type;
-      onConnected();
+      if(!window.solflare?.isSolflare){showError('Solflare 지갑이 설치되지 않았습니다. solflare.com에서 설치해주세요.');return;}
+      await window.solflare.connect();
+      pubkey=window.solflare.publicKey.toString();
     }
+    if(!pubkey)return;
+    wallet=pubkey;
+    const btn=document.getElementById('walletBtn');
+    btn.classList.add('connected');
+    document.getElementById('wBtnTxt').textContent=pubkey.slice(0,4)+'...'+pubkey.slice(-4);
+
+    // Fuul: 페이지뷰 + 지갑 식별
+    await fuulTrack(pubkey, type);
+
+    await loadData();
+  } catch(e){
+    showError('지갑 연결 실패: '+(e.message||'사용자가 취소했습니다.'));
   }
 }
 
-function onConnected() {
-  // UI 전환
-  document.getElementById('connectPrompt').style.display = 'none';
-  document.getElementById('dashboard').classList.add('visible');
-
-  // 헤더 버튼
-  const btn = document.getElementById('walletBtn');
-  btn.classList.add('connected');
-  btn.innerHTML = `<span class="wallet-icon">${walletType === 'phantom' ? '👻' : '☀️'}</span> ${shortAddr(walletAddr)}`;
-
-  // 주소 표시
-  document.getElementById('walletAddr').textContent = walletAddr;
-
-  showToast('지갑 연결 완료!', 'success');
-  loadData();
+// ── DATA ─────────────────────────────────────────────────────────────
+async function loadData(){
+  if(!wallet)return;
+  showLoad(true);hideError();
+  try{
+    const [acc,trades]=await Promise.all([fetchAccount(),fetchTrades()]);
+    renderDashboard(acc,trades);
+    showLoad(false);
+    document.getElementById('refreshBtn').classList.add('show');
+    // Fuul 기능 로드
+    await Promise.all([loadReferral(), loadLeaderboard()]);
+  } catch(e){
+    showLoad(false);
+    showError('데이터 로드 실패: '+(e.message||'네트워크 오류'));
+    renderFallback();
+    // fallback에서도 Fuul 기능은 표시
+    await Promise.all([loadReferral(), loadLeaderboard()]);
+  }
 }
 
-function disconnect() {
-  walletAddr = null;
-  walletType = null;
-  document.getElementById('connectPrompt').style.display = 'flex';
-  document.getElementById('dashboard').classList.remove('visible');
-  const btn = document.getElementById('walletBtn');
-  btn.classList.remove('connected');
-  btn.innerHTML = `<span class="wallet-icon">👛</span> 지갑 연결`;
-  showToast('연결이 해제되었습니다.', '');
+async function fetchAccount(){
+  const r=await fetch(`${API}/api/v1/account?account=${wallet}`);
+  if(!r.ok) throw new Error('Account API '+r.status);
+  const j=await r.json();
+  if(!j.success) throw new Error(j.error||'Account error');
+  return j.data?.[0]||{};
 }
 
-function shortAddr(addr) {
-  if (!addr) return '';
-  return addr.slice(0, 6) + '...' + addr.slice(-4);
+async function fetchTrades(){
+  let all=[],cursor=null,hasMore=true,pages=0;
+  while(hasMore&&pages<20){
+    const url=new URL(`${API}/api/v1/trades/history`);
+    url.searchParams.set('account',wallet);
+    url.searchParams.set('limit','100');
+    if(cursor)url.searchParams.set('cursor',cursor);
+    const r=await fetch(url.toString());
+    if(!r.ok) throw new Error('Trades API '+r.status);
+    const j=await r.json();
+    if(!j.success) throw new Error(j.error||'Trades error');
+    all=all.concat(j.data||[]);
+    hasMore=j.has_more;cursor=j.next_cursor;pages++;
+    if(!(j.data?.length))break;
+  }
+  return all;
 }
 
-function copyAddr() {
-  navigator.clipboard.writeText(walletAddr).then(() => showToast('주소가 복사되었습니다.', 'success'));
+// ── CALC ─────────────────────────────────────────────────────────────
+function calcVol(trades){
+  return trades.reduce((s,t)=>s+parseFloat(t.price||0)*parseFloat(t.amount||0),0);
 }
 
-// ── API FETCH ──────────────────────────────────────────────
-async function fetchPacifica(endpoint) {
-  const url = `${API_BASE}${endpoint}`;
-  const res = await fetch(url, {
-    headers: { 'Accept': 'application/json' },
-    mode: 'cors'
+function calcStreak(trades){
+  const days=new Set();
+  trades.forEach(t=>{
+    const d=new Date(t.created_at);
+    days.add(`${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`);
   });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
-}
-
-async function loadData() {
-  if (!walletAddr) return;
-  setRefreshSpinning(true);
-  hideApiError();
-
-  try {
-    await Promise.all([
-      loadAccountInfo(),
-      loadTrades(),
-    ]);
-  } catch (err) {
-    showApiError('Pacifica API에 직접 접근이 제한됩니다 (CORS). 실제 배포 환경에서는 백엔드 프록시를 통해 연동하세요. 현재는 데모 데이터를 표시합니다.');
-    loadDemoData();
-  } finally {
-    setRefreshSpinning(false);
+  const today=new Date();
+  const week=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(today);d.setUTCDate(d.getUTCDate()-i);
+    const k=`${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`;
+    week.push({traded:days.has(k),isToday:i===0});
   }
-}
-
-async function loadAccountInfo() {
-  const data = await fetchPacifica(`/account?account=${walletAddr}`);
-  if (data.success) {
-    const d = data.data;
-    accountData = d;
-    const balance = parseFloat(d.balance || d.equity || 0);
-    const pnl = parseFloat(d.unrealized_pnl || 0);
-    document.getElementById('statBalance').textContent = '$' + balance.toLocaleString('en', {maximumFractionDigits:2});
-    const pnlEl = document.getElementById('statPnl');
-    pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + Math.abs(pnl).toLocaleString('en', {maximumFractionDigits:2});
-    pnlEl.className = 'stat-value ' + (pnl >= 0 ? 'green' : 'red');
+  let cons=0;
+  for(let i=0;i<100;i++){
+    const d=new Date(today);d.setUTCDate(d.getUTCDate()-i);
+    const k=`${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`;
+    if(days.has(k))cons++;else break;
   }
+  return{week,cons};
 }
 
-async function loadTrades() {
-  const data = await fetchPacifica(`/trades/history?account=${walletAddr}&limit=20`);
-  if (data.success && data.data) {
-    tradesData = data.data;
-    computeVolume();
-    renderTrades();
-  }
+function stageOf(vol){
+  let s=STAGES[0];
+  for(let i=STAGES.length-1;i>=0;i--){if(vol>=STAGES[i].vol){s=STAGES[i];break;}}
+  return s;
 }
-
-// ── DEMO DATA (CORS fallback) ──────────────────────────────
-function loadDemoData() {
-  // 데모 계정 정보
-  const demoBalance = 12480.50;
-  const demoPnl = 342.80;
-  document.getElementById('statBalance').textContent = '$' + demoBalance.toLocaleString('en', {maximumFractionDigits:2});
-  const pnlEl = document.getElementById('statPnl');
-  pnlEl.textContent = '+$' + demoPnl.toFixed(2);
-  pnlEl.className = 'stat-value green';
-
-  // 데모 거래 내역
-  const symbols = ['BTC', 'ETH', 'SOL', 'SUI', 'JUP'];
-  const sides = ['open_long','close_long','open_short','close_short'];
-  tradesData = Array.from({length: 12}, (_, i) => {
-    const sym = symbols[Math.floor(Math.random() * symbols.length)];
-    const side = sides[Math.floor(Math.random() * sides.length)];
-    const price = sym === 'BTC' ? 98000 + Math.random()*4000 :
-                  sym === 'ETH' ? 3200 + Math.random()*300 :
-                  sym === 'SOL' ? 180 + Math.random()*20 : 2 + Math.random()*3;
-    const amount = parseFloat((Math.random() * 2 + 0.01).toFixed(4));
-    return {
-      created_at: Date.now() - i * 3600000 * Math.random() * 6,
-      symbol: sym,
-      side,
-      price: price.toFixed(2),
-      amount: amount.toFixed(4),
-    };
-  });
-
-  // 데모 거래량 (중간 진행 상태)
-  totalVolume = 74200;
-  document.getElementById('statVolume').textContent = '$' + totalVolume.toLocaleString('en');
-
-  // 데모 스트릭 (5일)
-  streakDays = [true, true, true, true, true, false, false];
-
-  renderTrades();
-  renderStreak();
-  renderShark();
-  renderEvoStages();
-  renderEggStatus();
-}
-
-// ── COMPUTE VOLUME ─────────────────────────────────────────
-function computeVolume() {
-  totalVolume = tradesData.reduce((sum, t) => {
-    const val = parseFloat(t.price) * parseFloat(t.amount);
-    return sum + (isNaN(val) ? 0 : val);
-  }, 0);
-  document.getElementById('statVolume').textContent = '$' + totalVolume.toLocaleString('en', {maximumFractionDigits:0});
-
-  // 스트릭 계산 (거래 날짜 기준 최근 7일)
-  const today = new Date();
-  const days = Array.from({length: 7}, (_, i) => {
-    const d = new Date(today);
-    d.setDate(d.getDate() - (6 - i));
-    return d.toDateString();
-  });
-  streakDays = days.map(day =>
-    tradesData.some(t => new Date(t.created_at).toDateString() === day)
-  );
-
-  renderStreak();
-  renderShark();
-  renderEvoStages();
-  renderEggStatus();
-}
-
-// ── RENDER TRADES ──────────────────────────────────────────
-function renderTrades() {
-  const tbody = document.getElementById('tradesBody');
-  if (!tradesData.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">거래 내역이 없습니다</td></tr>';
-    return;
-  }
-  const sideLabel = {
-    open_long: '롱 진입', close_long: '롱 청산',
-    open_short: '숏 진입', close_short: '숏 청산',
-    fulfill_taker: '체결', fulfill_maker: '체결'
-  };
-  const sideClass = {
-    open_long: 'side-long', close_long: 'side-long',
-    open_short: 'side-short', close_short: 'side-short',
-    fulfill_taker: 'side-long', fulfill_maker: 'side-long'
-  };
-  tbody.innerHTML = tradesData.slice(0, 10).map(t => {
-    const dt = new Date(t.created_at);
-    const time = dt.toLocaleDateString('ko-KR', {month:'2-digit',day:'2-digit'}) + ' ' +
-                 dt.toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'});
-    const price = parseFloat(t.price);
-    const amount = parseFloat(t.amount);
-    const notional = (price * amount).toFixed(2);
-    const cls = sideClass[t.side] || '';
-    const label = sideLabel[t.side] || t.side;
-    return `<tr>
-      <td style="color:var(--muted)">${time}</td>
-      <td style="font-weight:600">${t.symbol}</td>
-      <td class="${cls}">${label}</td>
-      <td>$${price.toLocaleString('en', {maximumFractionDigits:2})}</td>
-      <td>${amount}</td>
-      <td style="color:var(--text)">$${parseFloat(notional).toLocaleString('en', {maximumFractionDigits:2})}</td>
-    </tr>`;
-  }).join('');
-}
-
-// ── RENDER STREAK ──────────────────────────────────────────
-function renderStreak() {
-  const labels = ['월','화','수','목','금','토','일'];
-  const container = document.getElementById('streakDays');
-  const today = new Date().getDay();
-  const todayIdx = today === 0 ? 6 : today - 1;
-
-  let streak = 0;
-  for (let i = streakDays.length - 1; i >= 0; i--) {
-    if (streakDays[i]) streak++; else break;
-  }
-  document.getElementById('streakNum').textContent = streak;
-
-  container.innerHTML = streakDays.map((done, i) => {
-    const isToday = i === todayIdx;
-    const cls = isToday ? 'today' : done ? 'done' : 'missed';
-    const icon = isToday ? '⭐' : done ? '✓' : '·';
-    return `<div class="day-cell">
-      <div class="day-label">${labels[i]}</div>
-      <div class="day-dot ${cls}">${icon}</div>
-    </div>`;
-  }).join('');
-}
-
-// ── RENDER EGG STATUS ──────────────────────────────────────
-function renderEggStatus() {
-  const earned = totalVolume >= 10000;
-  const streak = streakDays.filter(Boolean).length;
-  const revived = streak >= 7;
-
-  document.getElementById('eggIcon').textContent = earned ? (revived ? '🥚✨' : '🥚') : '🫧';
-  document.getElementById('eggTitle').textContent = earned ? '상어알 획득!' : '상어알 미획득';
-  document.getElementById('eggDesc').textContent = earned
-    ? revived
-      ? '7일 연속 거래 달성! 상어알이 부활했습니다.'
-      : `상어알을 획득했습니다. 7일 연속 거래 시 부활합니다. (현재 ${streak}일)`
-    : `$10,000 거래를 달성하면 상어알을 획득합니다. (현재 $${totalVolume.toLocaleString('en', {maximumFractionDigits:0})})`;
-}
-
-// ── RENDER SHARK SVG ───────────────────────────────────────
-function getStageIndex(vol) {
-  let idx = 0;
-  for (let i = STAGES.length - 1; i >= 0; i--) {
-    if (vol >= STAGES[i].minVol) { idx = i; break; }
-  }
+function stageIdxOf(vol){
+  let idx=0;
+  for(let i=STAGES.length-1;i>=0;i--){if(vol>=STAGES[i].vol){idx=i;break;}}
   return idx;
 }
+function nextStageOf(vol){
+  for(let i=0;i<STAGES.length;i++){if(vol<STAGES[i].vol)return STAGES[i];}
+  return null;
+}
 
-function renderShark() {
-  const idx = getStageIndex(totalVolume);
-  const stage = STAGES[idx];
-  const nextStage = STAGES[idx + 1];
+// ── RENDER ───────────────────────────────────────────────────────────
+function renderDashboard(acc,trades){
+  document.getElementById('ncState').style.display='none';
+  document.getElementById('dashboard').style.display='block';
 
-  document.getElementById('sharkName').textContent = stage.name;
-  document.getElementById('sharkName').style.color = stage.color;
+  const vol=calcVol(trades);
+  const stage=stageOf(vol);
+  const idx=stageIdxOf(vol);
+  const next=nextStageOf(vol);
+  const streak=calcStreak(trades);
 
-  if (nextStage) {
-    const remaining = nextStage.minVol - totalVolume;
-    document.getElementById('sharkNextInfo').textContent =
-      `다음: ${nextStage.name} ($${remaining.toLocaleString('en', {maximumFractionDigits:0})} 남음)`;
-    const pct = Math.round(((totalVolume - stage.minVol) / (nextStage.minVol - stage.minVol)) * 100);
-    document.getElementById('progPct').textContent = pct + '%';
-    document.getElementById('progBar').style.width = pct + '%';
+  // header
+  document.getElementById('totalVolDisplay').textContent='$'+fmt(vol);
+  const badge=document.getElementById('stageBadge');
+  badge.textContent=stage.name;
+  badge.style.borderColor=stage.color;
+  badge.style.color=stage.color;
+  badge.style.background=stage.color+'22';
+
+  // shark
+  drawShark(idx,stage.color);
+  document.getElementById('sharkSvg').style.filter=`drop-shadow(0 0 24px ${stage.glow})`;
+  document.getElementById('sharkName').textContent=stage.name;
+  if(next){
+    document.getElementById('sharkNext').textContent=`${next.name}까지 $${fmt(next.vol-vol)} 남음`;
   } else {
-    document.getElementById('sharkNextInfo').textContent = '최고 등급 달성!';
-    document.getElementById('progPct').textContent = '100%';
-    document.getElementById('progBar').style.width = '100%';
+    document.getElementById('sharkNext').textContent='최고 등급 달성! 🎉';
   }
 
-  const eggPct = Math.min(100, Math.round((totalVolume / 10000) * 100));
-  document.getElementById('eggPct').textContent = eggPct + '%';
-  document.getElementById('eggBar').style.width = eggPct + '%';
+  // progress
+  let pct=0;
+  if(next){const prev=stage.vol;pct=Math.min(100,Math.round(((vol-prev)/(next.vol-prev))*100));}
+  else pct=100;
+  document.getElementById('progBar').style.width=pct+'%';
+  document.getElementById('progPct').textContent=pct+'%';
 
-  drawSharkSvg(idx);
+  // stats
+  document.getElementById('balVal').textContent=acc.balance?fmtM(acc.balance):'—';
+  document.getElementById('eqVal').textContent=acc.account_equity?fmtM(acc.account_equity):'—';
+  document.getElementById('posVal').textContent=acc.positions_count??'—';
+  document.getElementById('mgnVal').textContent=acc.total_margin_used?fmtM(acc.total_margin_used):'—';
+
+  // streak
+  renderStreak(streak);
+
+  // egg
+  renderEgg(vol,streak.cons);
+
+  // evo list
+  renderEvo(vol);
 }
 
-function drawSharkSvg(idx) {
-  const svg = document.getElementById('sharkSvg');
-  const cx = 80, cy = 90;
+function renderFallback(){
+  document.getElementById('ncState').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  drawShark(0,STAGES[0].color);
+  renderStreak({week:Array(7).fill({traded:false,isToday:false}),cons:0});
+  renderEvo(0);
+}
 
-  const svgs = [
-    // 0: 상어알
-    `<ellipse cx="${cx}" cy="${cy}" rx="38" ry="45" fill="#B5D4F4" stroke="#378ADD" stroke-width="2"/>
-     <ellipse cx="${cx}" cy="${cy-8}" rx="19" ry="25" fill="#E6F1FB" opacity="0.6"/>
-     <ellipse cx="${cx-10}" cy="${cy-12}" rx="6" ry="7" fill="#0C447C"/>
-     <ellipse cx="${cx-10}" cy="${cy-14}" rx="2.5" ry="3" fill="white"/>
-     <ellipse cx="${cx+10}" cy="${cy-12}" rx="6" ry="7" fill="#0C447C"/>
-     <ellipse cx="${cx+10}" cy="${cy-14}" rx="2.5" ry="3" fill="white"/>
-     <path d="M${cx-10} ${cy+5} Q${cx} ${cy+12} ${cx+10} ${cy+5}" stroke="#378ADD" stroke-width="2" fill="none" stroke-linecap="round"/>
-     <path d="M${cx} ${cy-42} L${cx-4} ${cy-32}" stroke="#378ADD" stroke-width="1.5" opacity="0.5"/>
-     <path d="M${cx+8} ${cy-38} L${cx+7} ${cy-28}" stroke="#378ADD" stroke-width="1.5" opacity="0.5"/>`,
-    // 1: 베이비
-    `<ellipse cx="${cx}" cy="${cy+4}" rx="44" ry="32" fill="#9FE1CB" stroke="#1D9E75" stroke-width="2"/>
-     <polygon points="${cx},${cy-45} ${cx-16},${cy-10} ${cx+16},${cy-10}" fill="#5DCAA5" stroke="#1D9E75" stroke-width="1.5"/>
-     <ellipse cx="${cx-28}" cy="${cy+2}" rx="10" ry="8" fill="#9FE1CB" stroke="#1D9E75" stroke-width="1.5"/>
-     <ellipse cx="${cx+28}" cy="${cy+2}" rx="10" ry="8" fill="#9FE1CB" stroke="#1D9E75" stroke-width="1.5"/>
-     <ellipse cx="${cx-14}" cy="${cy-2}" rx="6" ry="7" fill="#085041"/>
-     <ellipse cx="${cx-14}" cy="${cy-4}" rx="2.5" ry="3" fill="white"/>
-     <ellipse cx="${cx+14}" cy="${cy-2}" rx="6" ry="7" fill="#085041"/>
-     <ellipse cx="${cx+14}" cy="${cy-4}" rx="2.5" ry="3" fill="white"/>
-     <path d="M${cx-14} ${cy+16} Q${cx} ${cy+24} ${cx+14} ${cy+16}" stroke="#1D9E75" stroke-width="2" fill="none" stroke-linecap="round"/>`,
-    // 2: 청상어
-    `<ellipse cx="${cx}" cy="${cy+4}" rx="48" ry="33" fill="#B5D4F4" stroke="#185FA5" stroke-width="2"/>
-     <polygon points="${cx},${cx-65} ${cx-18},${cy-12} ${cx+18},${cy-12}" fill="#85B7EB" stroke="#185FA5" stroke-width="2"/>
-     <polygon points="${cx-58},${cy-4} ${cx-72},${cy-20} ${cx-48},${cy+12}" fill="#85B7EB" stroke="#185FA5" stroke-width="1.5"/>
-     <polygon points="${cx+58},${cy-4} ${cx+72},${cy-20} ${cx+48},${cy+12}" fill="#85B7EB" stroke="#185FA5" stroke-width="1.5"/>
-     <ellipse cx="${cx-16}" cy="${cy}" rx="7" ry="8" fill="#0C447C"/>
-     <ellipse cx="${cx-16}" cy="${cy-2}" rx="3" ry="3.5" fill="white"/>
-     <ellipse cx="${cx+16}" cy="${cy}" rx="7" ry="8" fill="#0C447C"/>
-     <ellipse cx="${cx+16}" cy="${cy-2}" rx="3" ry="3.5" fill="white"/>
-     <path d="M${cx-16} ${cy+18} Q${cx} ${cy+28} ${cx+16} ${cy+18}" stroke="#185FA5" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-     <path d="M${cx-12} ${cy+21} L${cx-9} ${cy+27} M${cx} ${cy+23} L${cx} ${cy+29} M${cx+12} ${cy+21} L${cx+9} ${cy+27}" stroke="#0C447C" stroke-width="1.5" stroke-linecap="round"/>`,
-    // 3: 함머헤드
-    `<ellipse cx="${cx}" cy="${cy+4}" rx="50" ry="33" fill="#FAC775" stroke="#BA7517" stroke-width="2"/>
-     <polygon points="${cx},${cy-55} ${cx-20},${cy-10} ${cx+20},${cy-10}" fill="#EF9F27" stroke="#BA7517" stroke-width="2"/>
-     <polygon points="${cx-62},${cy-6} ${cx-76},${cy-22} ${cx-52},${cy+14}" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
-     <polygon points="${cx+62},${cy-6} ${cx+76},${cy-22} ${cx+52},${cy+14}" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
-     <ellipse cx="${cx-18}" cy="${cy+2}" rx="8" ry="9" fill="#633806"/>
-     <ellipse cx="${cx-18}" cy="${cy}" rx="3.5" ry="4" fill="white"/>
-     <ellipse cx="${cx+18}" cy="${cy+2}" rx="8" ry="9" fill="#633806"/>
-     <ellipse cx="${cx+18}" cy="${cy}" rx="3.5" ry="4" fill="white"/>
-     <path d="M${cx-18} ${cy+20} Q${cx} ${cy+30} ${cx+18} ${cy+20}" stroke="#BA7517" stroke-width="3" fill="none" stroke-linecap="round"/>
-     <path d="M${cx-14} ${cy+24} L${cx-11} ${cy+30} M${cx} ${cy+26} L${cx} ${cy+33} M${cx+14} ${cy+24} L${cx+11} ${cy+30}" stroke="#633806" stroke-width="1.8" stroke-linecap="round"/>`,
-    // 4: 백상아리
-    `<ellipse cx="${cx}" cy="${cy+4}" rx="52" ry="34" fill="#F0997B" stroke="#993C1D" stroke-width="2"/>
-     <polygon points="${cx},${cy-60} ${cx-22},${cy-10} ${cx+22},${cy-10}" fill="#D85A30" stroke="#993C1D" stroke-width="2"/>
-     <polygon points="${cx-65},${cy-8} ${cx-80},${cy-26} ${cx-55},${cy+14}" fill="#D85A30" stroke="#993C1D" stroke-width="1.5"/>
-     <polygon points="${cx+65},${cy-8} ${cx+80},${cy-26} ${cx+55},${cy+14}" fill="#D85A30" stroke="#993C1D" stroke-width="1.5"/>
-     <polygon points="${cx},${cy+36} ${cx-16},${cy+18} ${cx+16},${cy+18}" fill="#D85A30" stroke="#993C1D" stroke-width="1.5"/>
-     <ellipse cx="${cx-20}" cy="${cy+2}" rx="9" ry="10" fill="#4A1B0C"/>
-     <ellipse cx="${cx-20}" cy="${cy-1}" rx="4" ry="4.5" fill="white"/>
-     <ellipse cx="${cx+20}" cy="${cy+2}" rx="9" ry="10" fill="#4A1B0C"/>
-     <ellipse cx="${cx+20}" cy="${cy-1}" rx="4" ry="4.5" fill="white"/>
-     <path d="M${cx-20} ${cy+20} Q${cx} ${cy+32} ${cx+20} ${cy+20}" stroke="#993C1D" stroke-width="3" fill="none" stroke-linecap="round"/>
-     <path d="M${cx-16} ${cy+24} L${cx-13} ${cy+31} M${cx} ${cy+27} L${cx} ${cy+34} M${cx+16} ${cy+24} L${cx+13} ${cy+31}" stroke="#4A1B0C" stroke-width="2" stroke-linecap="round"/>`,
-    // 5: 메가로돈
-    `<ellipse cx="${cx}" cy="${cy+4}" rx="54" ry="35" fill="#AFA9EC" stroke="#534AB7" stroke-width="2"/>
-     <polygon points="${cx},${cy-65} ${cx-24},${cy-10} ${cx+24},${cy-10}" fill="#7F77DD" stroke="#534AB7" stroke-width="2"/>
-     <polygon points="${cx-68},${cy-10} ${cx-84},${cy-30} ${cx-56},${cy+14}" fill="#7F77DD" stroke="#534AB7" stroke-width="1.5"/>
-     <polygon points="${cx+68},${cy-10} ${cx+84},${cy-30} ${cx+56},${cy+14}" fill="#7F77DD" stroke="#534AB7" stroke-width="1.5"/>
-     <polygon points="${cx},${cy+38} ${cx-18},${cy+18} ${cx+18},${cy+18}" fill="#7F77DD" stroke="#534AB7" stroke-width="1.5"/>
-     <polygon points="${cx},${cy+38} ${cx-8},${cy+26} ${cx+8},${cy+26}" fill="#534AB7"/>
-     <ellipse cx="${cx-22}" cy="${cy+2}" rx="10" ry="11" fill="#26215C"/>
-     <ellipse cx="${cx-22}" cy="${cy-2}" rx="4.5" ry="5" fill="white"/>
-     <ellipse cx="${cx+22}" cy="${cy+2}" rx="10" ry="11" fill="#26215C"/>
-     <ellipse cx="${cx+22}" cy="${cy-2}" rx="4.5" ry="5" fill="white"/>
-     <path d="M${cx-22} ${cy+22} Q${cx} ${cy+36} ${cx+22} ${cy+22}" stroke="#534AB7" stroke-width="3" fill="none" stroke-linecap="round"/>
-     <path d="M${cx-18} ${cy+27} L${cx-15} ${cy+34} M${cx} ${cy+30} L${cx} ${cy+37} M${cx+18} ${cy+27} L${cx+15} ${cy+34}" stroke="#26215C" stroke-width="2" stroke-linecap="round"/>`,
-    // 6: 상어왕
-    `<ellipse cx="${cx}" cy="${cy+4}" rx="55" ry="35" fill="#FAC775" stroke="#BA7517" stroke-width="2.5"/>
-     <polygon points="${cx},${cy-68} ${cx-26},${cy-10} ${cx+26},${cy-10}" fill="#EF9F27" stroke="#BA7517" stroke-width="2.5"/>
-     <polygon points="${cx-70},${cy-12} ${cx-86},${cy-34} ${cx-58},${cy+14}" fill="#EF9F27" stroke="#BA7517" stroke-width="2"/>
-     <polygon points="${cx+70},${cy-12} ${cx+86},${cy-34} ${cx+58},${cy+14}" fill="#EF9F27" stroke="#BA7517" stroke-width="2"/>
-     <polygon points="${cx},${cy+40} ${cx-20},${cy+18} ${cx+20},${cy+18}" fill="#EF9F27" stroke="#BA7517" stroke-width="2"/>
-     <polygon points="${cx},${cy+40} ${cx-8},${cy+27} ${cx+8},${cy+27}" fill="#BA7517"/>
-     <polygon points="${cx-40},${cy-50} ${cx-46},${cy-62} ${cx-32},${cy-54}" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
-     <polygon points="${cx+40},${cy-50} ${cx+46},${cy-62} ${cx+32},${cy-54}" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
-     <polygon points="${cx},${cy-64} ${cx-6},${cy-76} ${cx+6},${cy-76}" fill="#EF9F27" stroke="#BA7517" stroke-width="1.5"/>
-     <ellipse cx="${cx-24}" cy="${cy+2}" rx="11" ry="12" fill="#412402"/>
-     <ellipse cx="${cx-24}" cy="${cy-2}" rx="5" ry="5.5" fill="white"/>
-     <ellipse cx="${cx-24}" cy="${cy-2}" rx="2" ry="2.5" fill="#412402"/>
-     <ellipse cx="${cx+24}" cy="${cy+2}" rx="11" ry="12" fill="#412402"/>
-     <ellipse cx="${cx+24}" cy="${cy-2}" rx="5" ry="5.5" fill="white"/>
-     <ellipse cx="${cx+24}" cy="${cy-2}" rx="2" ry="2.5" fill="#412402"/>
-     <path d="M${cx-24} ${cy+24} Q${cx} ${cy+40} ${cx+24} ${cy+24}" stroke="#BA7517" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-     <path d="M${cx-20} ${cy+29} L${cx-17} ${cy+36} M${cx} ${cy+33} L${cx} ${cy+40} M${cx+20} ${cy+29} L${cx+17} ${cy+36}" stroke="#412402" stroke-width="2.5" stroke-linecap="round"/>`,
+function renderStreak({week,cons}){
+  const labels=['월','화','수','목','금','토','일'];
+  const row=document.getElementById('streakRow');
+  row.innerHTML='';
+  week.forEach((d,i)=>{
+    const el=document.createElement('div');
+    el.className='sday'+(d.isToday?' today':d.traded?' done':'');
+    el.innerHTML=`<div class="dl">${labels[i]}</div><div class="dc">${d.traded?'✓':'·'}</div>`;
+    row.appendChild(el);
+  });
+  const info=document.getElementById('streakInfo');
+  if(cons>=7){info.innerHTML='🎉 <strong>7일 연속 달성!</strong> 상어알이 부활했어요!';}
+  else if(cons>0){info.innerHTML=`현재 <strong>${cons}일</strong> 연속 · ${7-cons}일 더 하면 상어알 부활!`;}
+  else{info.textContent='오늘 Pacifica에서 거래하면 스트릭이 시작돼요!';}
+}
+
+function renderEgg(vol,cons){
+  const icon=document.getElementById('eggIcon');
+  const title=document.getElementById('eggTitle');
+  const sub=document.getElementById('eggSub');
+  const tag=document.getElementById('eggTag');
+  if(vol>=10000){
+    icon.textContent='🦈';
+    title.textContent='상어알 획득 완료!';
+    sub.textContent='거래 $10,000 달성으로 상어알을 얻었습니다.';
+    tag.textContent=cons>=7?'✓ 7일 연속 달성 — 상어알 부활!':'7일 연속 거래 시 부활 (현재 '+cons+'일)';
+    tag.style.background=cons>=7?'rgba(0,229,176,.15)':'rgba(245,158,11,.15)';
+    tag.style.color=cons>=7?'var(--teal)':'var(--amber)';
+    tag.style.borderColor=cons>=7?'rgba(0,229,176,.3)':'rgba(245,158,11,.3)';
+  } else {
+    icon.textContent='🥚';
+    title.textContent='상어알 대기 중';
+    sub.textContent='$'+fmt(10000-vol)+' 더 거래하면 상어알 획득!';
+  }
+}
+
+function renderEvo(vol){
+  const list=document.getElementById('evoList');
+  const idx=stageIdxOf(vol);
+  list.innerHTML='';
+  STAGES.forEach((s,i)=>{
+    const reached=vol>=s.vol,cur=i===idx;
+    const el=document.createElement('div');
+    el.className='evo-item';
+    el.innerHTML=`<div class="evo-dot ${cur?'current':reached?'reached':''}"></div>
+      <div class="evo-name ${cur?'current':reached?'reached':'locked'}">${s.name}</div>
+      <div class="evo-vol ${reached?'reached':''}">${s.vol===0?'시작':'$'+fmt(s.vol)}</div>`;
+    list.appendChild(el);
+  });
+}
+
+// ── SHARK SVG ────────────────────────────────────────────────────────
+function drawShark(idx,c){
+  const svg=document.getElementById('sharkSvg');
+  const dk=dk_(c),lt=lt_(c);
+  const shapes=[
+    // 0 Egg
+    `<ellipse cx="80" cy="92" rx="44" ry="54" fill="${lt}" stroke="${c}" stroke-width="3"/>
+     <ellipse cx="80" cy="80" rx="22" ry="28" fill="white" opacity="0.12"/>
+     <ellipse cx="66" cy="74" rx="7" ry="9" fill="${dk}"/>
+     <ellipse cx="66" cy="72" rx="3" ry="3.5" fill="white"/>
+     <ellipse cx="94" cy="74" rx="7" ry="9" fill="${dk}"/>
+     <ellipse cx="94" cy="72" rx="3" ry="3.5" fill="white"/>
+     <path d="M66 100 Q80 110 94 100" stroke="${c}" stroke-width="3" fill="none" stroke-linecap="round"/>
+     <path d="M80 38 L77 50" stroke="${c}" stroke-width="2" opacity="0.5"/>
+     <path d="M88 42 L87 53" stroke="${c}" stroke-width="2" opacity="0.5"/>`,
+    // 1 Baby
+    `<ellipse cx="80" cy="96" rx="52" ry="38" fill="${lt}" stroke="${c}" stroke-width="2.5"/>
+     <polygon points="80,30 65,76 95,76" fill="${c}" stroke="${dk}" stroke-width="2"/>
+     <ellipse cx="55" cy="92" rx="12" ry="9" fill="${lt}" stroke="${c}" stroke-width="2"/>
+     <ellipse cx="105" cy="92" rx="12" ry="9" fill="${lt}" stroke="${c}" stroke-width="2"/>
+     <ellipse cx="62" cy="90" rx="7" ry="8" fill="${dk}"/>
+     <ellipse cx="62" cy="88" rx="3" ry="3.5" fill="white"/>
+     <ellipse cx="98" cy="90" rx="7" ry="8" fill="${dk}"/>
+     <ellipse cx="98" cy="88" rx="3" ry="3.5" fill="white"/>
+     <path d="M62 110 Q80 122 98 110" stroke="${c}" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    // 2 Blue shark
+    `<ellipse cx="80" cy="98" rx="56" ry="40" fill="${lt}" stroke="${c}" stroke-width="2.5"/>
+     <polygon points="80,26 62,78 98,78" fill="${c}" stroke="${dk}" stroke-width="2"/>
+     <polygon points="22,80 6,58 28,96" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
+     <polygon points="138,80 154,58 132,96" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
+     <ellipse cx="58" cy="92" rx="8" ry="9" fill="${dk}"/>
+     <ellipse cx="58" cy="90" rx="3.5" ry="4" fill="white"/>
+     <ellipse cx="102" cy="92" rx="8" ry="9" fill="${dk}"/>
+     <ellipse cx="102" cy="90" rx="3.5" ry="4" fill="white"/>
+     <path d="M58 114 Q80 128 102 114" stroke="${c}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+     <path d="M62 118 L65 128 M80 121 L80 132 M98 118 L95 128" stroke="${dk}" stroke-width="2" stroke-linecap="round"/>`,
+    // 3 Hammerhead
+    `<ellipse cx="80" cy="98" rx="58" ry="40" fill="${lt}" stroke="${c}" stroke-width="3"/>
+     <polygon points="80,22 60,78 100,78" fill="${c}" stroke="${dk}" stroke-width="2"/>
+     <polygon points="20,78 2,54 24,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
+     <polygon points="140,78 158,54 136,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
+     <rect x="30" y="80" width="100" height="18" rx="4" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
+     <ellipse cx="38" cy="89" rx="8" ry="9" fill="${dk}"/>
+     <ellipse cx="38" cy="87" rx="3.5" ry="4" fill="white"/>
+     <ellipse cx="122" cy="89" rx="8" ry="9" fill="${dk}"/>
+     <ellipse cx="122" cy="87" rx="3.5" ry="4" fill="white"/>
+     <path d="M55 116 Q80 132 105 116" stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"/>`,
+    // 4 Great white
+    `<ellipse cx="80" cy="98" rx="60" ry="42" fill="${lt}" stroke="${c}" stroke-width="3"/>
+     <polygon points="80,18 58,78 102,78" fill="${c}" stroke="${dk}" stroke-width="2.5"/>
+     <polygon points="16,76 -2,50 20,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
+     <polygon points="144,76 162,50 140,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
+     <polygon points="80,150 68,118 92,118" fill="${c}" stroke="${dk}" stroke-width="2"/>
+     <ellipse cx="56" cy="90" rx="9" ry="10" fill="${dk}"/>
+     <ellipse cx="56" cy="87" rx="4" ry="4.5" fill="white"/>
+     <ellipse cx="56" cy="87" rx="1.5" ry="2" fill="${dk}"/>
+     <ellipse cx="104" cy="90" rx="9" ry="10" fill="${dk}"/>
+     <ellipse cx="104" cy="87" rx="4" ry="4.5" fill="white"/>
+     <ellipse cx="104" cy="87" rx="1.5" ry="2" fill="${dk}"/>
+     <path d="M55 116 Q80 134 105 116" stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"/>
+     <path d="M59 120 L62 132 M80 123 L80 136 M101 120 L98 132" stroke="${dk}" stroke-width="2.5" stroke-linecap="round"/>`,
+    // 5 Megalodon
+    `<ellipse cx="80" cy="99" rx="62" ry="44" fill="${lt}" stroke="${c}" stroke-width="3.5"/>
+     <polygon points="80,14 56,78 104,78" fill="${c}" stroke="${dk}" stroke-width="3"/>
+     <polygon points="12,74 -8,44 16,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
+     <polygon points="148,74 168,44 144,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
+     <polygon points="80,154 66,118 94,118" fill="${c}" stroke="${dk}" stroke-width="2"/>
+     <polygon points="80,154 74,132 86,132" fill="${dk}" stroke="${dk}" stroke-width="1"/>
+     <ellipse cx="52" cy="90" rx="10" ry="11" fill="${dk}"/>
+     <ellipse cx="52" cy="86" rx="4.5" ry="5" fill="white"/>
+     <ellipse cx="52" cy="86" rx="1.8" ry="2.2" fill="${dk}"/>
+     <ellipse cx="108" cy="90" rx="10" ry="11" fill="${dk}"/>
+     <ellipse cx="108" cy="86" rx="4.5" ry="5" fill="white"/>
+     <ellipse cx="108" cy="86" rx="1.8" ry="2.2" fill="${dk}"/>
+     <path d="M52 118 Q80 138 108 118" stroke="${c}" stroke-width="5" fill="none" stroke-linecap="round"/>
+     <path d="M56 123 L60 135 M80 126 L80 139 M104 123 L100 135" stroke="${dk}" stroke-width="2.5" stroke-linecap="round"/>`,
+    // 6 Shark King
+    `<ellipse cx="80" cy="99" rx="62" ry="44" fill="${lt}" stroke="${c}" stroke-width="4"/>
+     <polygon points="80,12 54,78 106,78" fill="${c}" stroke="${dk}" stroke-width="3"/>
+     <polygon points="8,72 -14,40 14,96" fill="${c}" stroke="${dk}" stroke-width="2.5"/>
+     <polygon points="152,72 174,40 146,96" fill="${c}" stroke="${dk}" stroke-width="2.5"/>
+     <polygon points="80,156 64,118 96,118" fill="${c}" stroke="${dk}" stroke-width="2.5"/>
+     <polygon points="80,156 72,134 88,134" fill="${dk}" stroke="${dk}" stroke-width="1.5"/>
+     <polygon points="40,42 34,22 50,32" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
+     <polygon points="120,42 126,22 110,32" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
+     <polygon points="80,14 74,26 86,26" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
+     <ellipse cx="50" cy="90" rx="11" ry="13" fill="${dk}"/>
+     <ellipse cx="50" cy="85" rx="5" ry="5.5" fill="white"/>
+     <ellipse cx="50" cy="85" rx="2" ry="2.5" fill="${dk}"/>
+     <ellipse cx="110" cy="90" rx="11" ry="13" fill="${dk}"/>
+     <ellipse cx="110" cy="85" rx="5" ry="5.5" fill="white"/>
+     <ellipse cx="110" cy="85" rx="2" ry="2.5" fill="${dk}"/>
+     <path d="M50 120 Q80 142 110 120" stroke="${c}" stroke-width="6" fill="none" stroke-linecap="round"/>
+     <path d="M55 126 L59 140 M80 129 L80 144 M105 126 L101 140" stroke="${dk}" stroke-width="3" stroke-linecap="round"/>`,
   ];
-
-  svg.innerHTML = svgs[Math.min(idx, svgs.length - 1)];
+  svg.innerHTML=shapes[Math.min(idx,shapes.length-1)];
 }
 
-// ── RENDER EVO STAGES ──────────────────────────────────────
-function renderEvoStages() {
-  const currentIdx = getStageIndex(totalVolume);
-  const container = document.getElementById('evoStages');
-  container.innerHTML = STAGES.map((s, i) => {
-    const reached = i < currentIdx;
-    const current = i === currentIdx;
-    const locked = i > currentIdx;
-    const cls = reached ? 'reached' : current ? 'current' : 'locked';
-    return `<div class="evo-item ${cls}">
-      <div class="evo-num">${i+1}</div>
-      <div class="evo-shark-mini">${s.emoji}</div>
-      <div class="evo-info">
-        <div class="evo-name">${s.name}</div>
-        <div class="evo-req">${s.minVol === 0 ? '시작 단계' : '$' + s.minVol.toLocaleString('en')}</div>
-      </div>
-      ${reached ? '<div class="evo-check">✓</div>' : current ? '<div class="evo-check" style="color:var(--accent)">▶</div>' : ''}
+// ── UTILS ─────────────────────────────────────────────────────────────
+function fmt(n){
+  if(n>=1000000)return(n/1000000).toFixed(1)+'M';
+  if(n>=1000)return(n/1000).toFixed(1)+'K';
+  return Math.round(n).toLocaleString();
+}
+function fmtM(v){return parseFloat(v).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});}
+
+function lt_(hex){
+  if(!hex.startsWith('#'))return 'rgba(100,100,200,0.25)';
+  const n=parseInt(hex.slice(1),16);
+  const r=Math.min(255,((n>>16)&255)+80);
+  const g=Math.min(255,((n>>8)&255)+80);
+  const b=Math.min(255,(n&255)+80);
+  return `rgba(${r},${g},${b},0.28)`;
+}
+function dk_(hex){
+  if(!hex.startsWith('#'))return '#334';
+  const n=parseInt(hex.slice(1),16);
+  const r=Math.max(0,((n>>16)&255)-70);
+  const g=Math.max(0,((n>>8)&255)-70);
+  const b=Math.max(0,(n&255)-70);
+  return `rgb(${r},${g},${b})`;
+}
+
+function showLoad(show){
+  document.getElementById('loadState').style.display=show?'block':'none';
+  document.getElementById('ncState').style.display=(!show&&!wallet)?'block':'none';
+  if(show)document.getElementById('dashboard').style.display='none';
+}
+function showError(msg){const el=document.getElementById('errorBanner');el.textContent='⚠ '+msg;el.style.display='block';}
+function hideError(){document.getElementById('errorBanner').style.display='none';}
+
+// ── FUUL INTEGRATION ──────────────────────────────────────────────────
+
+// 1. 페이지 로드 시 pageview 전송 (레퍼럴 코드 URL 캡처)
+window.addEventListener('load', async () => {
+  try {
+    if (window.Fuul) await window.Fuul.sendPageview();
+  } catch(e) { console.warn('Fuul pageview:', e.message); }
+});
+
+// 2. 지갑 연결 시 Fuul에 유저 식별
+async function fuulTrack(pubkey, walletType) {
+  try {
+    if (!window.Fuul) return;
+    const provider = walletType === 'phantom' ? window.solana : window.solflare;
+    const message = 'Shark Arena: verify identity';
+    const encoded = new TextEncoder().encode(message);
+    const { signature } = await provider.signMessage(encoded, 'utf8');
+    const sigHex = Buffer.from(signature).toString('hex');
+    await window.Fuul.identifyUser({
+      identifier: pubkey,
+      identifierType: 'solana_address',
+      signature: sigHex,
+      message,
+    });
+    console.log('Fuul: user identified', pubkey);
+  } catch(e) {
+    console.warn('Fuul identifyUser skipped:', e.message);
+  }
+}
+
+// 3. 레퍼럴 링크 생성
+async function loadReferral() {
+  if (!wallet) return;
+  document.getElementById('referralCard').style.display = 'block';
+  try {
+    let refCode = wallet.slice(0, 8); // fallback: 지갑 앞 8자리
+    if (window.Fuul) {
+      try {
+        const result = await window.Fuul.getAffiliateLink({ identifier: wallet, identifierType: 'solana_address' });
+        if (result?.url) {
+          document.getElementById('refLink').textContent = result.url;
+          loadReferralStats();
+          return;
+        }
+      } catch(e) { console.warn('Fuul affiliate link:', e.message); }
+    }
+    // Fuul API 키 미설정 시 데모 링크 표시
+    const demoLink = `${window.location.origin}${window.location.pathname}?referrer=${refCode}`;
+    document.getElementById('refLink').textContent = demoLink;
+    loadReferralStats();
+  } catch(e) {
+    document.getElementById('refLink').textContent = '링크 생성 실패 (Fuul API 키 필요)';
+  }
+}
+
+// 4. 레퍼럴 통계 로드
+async function loadReferralStats() {
+  try {
+    if (!window.Fuul) return;
+    const data = await window.Fuul.getReferredMetrics({
+      identifier: wallet,
+      identifierType: 'solana_address',
+    });
+    if (data) {
+      document.getElementById('refUsers').textContent = data.referred_users ?? '0';
+      const vol = parseFloat(data.referred_volume ?? 0);
+      document.getElementById('refVol').textContent = vol >= 1000 ? (vol/1000).toFixed(1)+'K' : vol.toFixed(0);
+    }
+  } catch(e) {
+    document.getElementById('refUsers').textContent = '0';
+    document.getElementById('refVol').textContent = '$0';
+    console.warn('Fuul referral stats:', e.message);
+  }
+}
+
+// 5. 리더보드 로드
+async function loadLeaderboard() {
+  document.getElementById('leaderCard').style.display = 'block';
+  try {
+    let entries = [];
+    if (window.Fuul) {
+      try {
+        const data = await window.Fuul.getVolumeLeaderboard({ limit: 10 });
+        entries = data?.results ?? [];
+      } catch(e) { console.warn('Fuul leaderboard:', e.message); }
+    }
+    // Fuul 연동 전 데모 데이터
+    if (!entries.length) {
+      entries = [
+        { identifier: 'SharkKing...8a2F', volume: 12400000 },
+        { identifier: 'Mega...3bC9',      volume: 5800000  },
+        { identifier: 'GrWht...7dE1',     volume: 3200000  },
+        { identifier: 'Hamm...2aA4',      volume: 980000   },
+        { identifier: 'Blue...9fB6',      volume: 420000   },
+      ];
+    }
+    renderLeaderboard(entries);
+  } catch(e) {
+    document.getElementById('leaderList').innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px;">리더보드 데이터 없음</div>';
+  }
+}
+
+function renderLeaderboard(entries) {
+  const medals = ['🥇','🥈','🥉'];
+  const stageEmoji = (vol) => {
+    if(vol>=10000000) return '👑';
+    if(vol>=3000000)  return '🦈';
+    if(vol>=1000000)  return '🦈';
+    if(vol>=500000)   return '🦈';
+    if(vol>=100000)   return '🦈';
+    if(vol>=10000)    return '🐟';
+    return '🥚';
+  };
+
+  let myRank = null;
+  const html = entries.slice(0, 10).map((e, i) => {
+    const addr = e.identifier ?? e.user ?? '—';
+    const vol = parseFloat(e.volume ?? e.trading_volume ?? 0);
+    const short = addr.length > 12 ? addr.slice(0,6)+'...'+addr.slice(-4) : addr;
+    const isMe = wallet && addr.toLowerCase() === wallet.toLowerCase();
+    if (isMe) myRank = i + 1;
+    const rank = medals[i] ?? `#${i+1}`;
+    const volFmt = vol >= 1000000 ? (vol/1000000).toFixed(2)+'M' : vol >= 1000 ? (vol/1000).toFixed(1)+'K' : vol.toFixed(0);
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:6px;background:${isMe?'rgba(0,229,176,0.08)':'var(--bg3)'};border:1px solid ${isMe?'rgba(0,229,176,0.3)':'var(--border)'};transition:all .2s;">
+      <div style="font-size:18px;width:28px;text-align:center;">${rank}</div>
+      <div style="font-size:16px;">${stageEmoji(vol)}</div>
+      <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;color:${isMe?'var(--teal)':'var(--text)'};">${short}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:${isMe?'var(--teal)':'var(--text2)'};">$${volFmt}</div>
     </div>`;
   }).join('');
+
+  document.getElementById('leaderList').innerHTML = html || '<div style="text-align:center;padding:1rem;color:var(--text3);">데이터 없음</div>';
+
+  if (myRank) {
+    document.getElementById('myRankBar').style.display = 'block';
+    document.getElementById('myRankTxt').textContent = `${myRank}위`;
+  }
 }
 
-// ── UI HELPERS ─────────────────────────────────────────────
-function setRefreshSpinning(on) {
-  document.getElementById('refreshBtn').classList.toggle('spinning', on);
-}
-function showApiError(msg) {
-  const el = document.getElementById('apiError');
-  document.getElementById('apiErrorMsg').textContent = msg;
-  el.classList.add('visible');
-}
-function hideApiError() {
-  document.getElementById('apiError').classList.remove('visible');
-}
-function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  setTimeout(() => t.classList.remove('show'), 3000);
+function copyRef() {
+  const link = document.getElementById('refLink').textContent;
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = document.getElementById('copyRefBtn');
+    btn.textContent = '복사됨 ✓';
+    btn.style.color = 'var(--teal)';
+    setTimeout(() => { btn.textContent = '복사'; btn.style.color = ''; }, 2000);
+  });
 }
 </script>
 </body>
