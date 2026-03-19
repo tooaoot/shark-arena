@@ -21,7 +21,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 /* ── 수조관 배경 ── */
 .aquarium-bg{
   position:fixed;inset:0;z-index:0;overflow:hidden;
-  background:linear-gradient(180deg,#010d1a 0%,#011a2e 25%,#012440 50%,#011a2e 75%,#010d1a 100%);
+  background:linear-gradient(180deg,#010d1a 0%,#011a2e 30%,#012a4a 60%,#011a2e 85%,#010d1a 100%);
 }
 /* 수조 유리 반사 효과 */
 .aquarium-bg::before{
@@ -120,7 +120,7 @@ body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-ser
 .fish.left{animation-direction:reverse;}
 
 .orb{display:none}
-.app{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 80px}
+.app{position:relative;z-index:2;max-width:480px;margin:0 auto;padding:0 16px 80px}
 
 /* HEADER */
 header{display:flex;align-items:center;justify-content:space-between;padding:20px 0 24px;position:relative;z-index:2}
@@ -294,21 +294,40 @@ footer a{color:var(--teal);text-decoration:none}
 
       <!-- 히어로 상어 -->
       <div class="hero-shark-wrap">
-        <svg id="heroSharkSvg" viewBox="0 0 160 160" style="width:240px;height:240px;filter:drop-shadow(0 0 32px rgba(0,229,176,0.4));">
-          <ellipse cx="80" cy="104" rx="50" ry="34" fill="#9FE1CB" stroke="#1D9E75" stroke-width="2"/>
-          <polygon points="80,28 62,76 98,76" fill="#5DCAA5" stroke="#1D9E75" stroke-width="1.5"/>
-          <polygon points="26,80 10,58 32,100" fill="#5DCAA5" stroke="#1D9E75" stroke-width="1.5"/>
-          <polygon points="134,80 150,58 128,100" fill="#5DCAA5" stroke="#1D9E75" stroke-width="1.5"/>
-          <ellipse cx="58" cy="95" rx="8" ry="9" fill="#085041"/>
-          <ellipse cx="58" cy="92" rx="3.5" ry="4" fill="white"/>
-          <ellipse cx="58" cy="92" rx="1.4" ry="1.6" fill="#085041"/>
-          <ellipse cx="102" cy="95" rx="8" ry="9" fill="#085041"/>
-          <ellipse cx="102" cy="92" rx="3.5" ry="4" fill="white"/>
-          <ellipse cx="102" cy="92" rx="1.4" ry="1.6" fill="#085041"/>
-          <path d="M58 118 Q80 132 102 118" stroke="#1D9E75" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <path d="M62 123 L65 131 M80 126 L80 134 M98 123 L95 131" stroke="#085041" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="58" cy="92" r="5" fill="none" stroke="rgba(0,229,176,0.5)" stroke-width="1" opacity="0.6"/>
-          <circle cx="102" cy="92" r="5" fill="none" stroke="rgba(0,229,176,0.5)" stroke-width="1" opacity="0.6"/>
+        <svg id="heroSharkSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:240px;height:240px;filter:drop-shadow(0 0 24px rgba(0,229,176,0.5));">
+          <!-- 몸통 -->
+          <ellipse cx="100" cy="120" rx="60" ry="38" fill="#5DCAA5" stroke="#1D9E75" stroke-width="2.5"/>
+          <!-- 등지느러미 -->
+          <polygon points="100,48 82,95 118,95" fill="#3DAA85" stroke="#1D9E75" stroke-width="2"/>
+          <!-- 왼쪽 가슴지느러미 -->
+          <polygon points="42,115 18,95 45,135" fill="#3DAA85" stroke="#1D9E75" stroke-width="1.5"/>
+          <!-- 오른쪽 가슴지느러미 -->
+          <polygon points="158,115 182,95 155,135" fill="#3DAA85" stroke="#1D9E75" stroke-width="1.5"/>
+          <!-- 꼬리지느러미 -->
+          <polygon points="100,155 82,138 118,138" fill="#3DAA85" stroke="#1D9E75" stroke-width="1.5"/>
+          <!-- 배 흰부분 -->
+          <ellipse cx="100" cy="125" rx="36" ry="24" fill="#9FE1CB" opacity="0.6"/>
+          <!-- 왼쪽 눈 흰자 -->
+          <ellipse cx="76" cy="110" rx="11" ry="12" fill="#085041"/>
+          <ellipse cx="76" cy="107" rx="5" ry="5.5" fill="white"/>
+          <ellipse cx="76" cy="107" rx="2" ry="2.5" fill="#032a20"/>
+          <!-- 오른쪽 눈 흰자 -->
+          <ellipse cx="124" cy="110" rx="11" ry="12" fill="#085041"/>
+          <ellipse cx="124" cy="107" rx="5" ry="5.5" fill="white"/>
+          <ellipse cx="124" cy="107" rx="2" ry="2.5" fill="#032a20"/>
+          <!-- 눈 반짝임 -->
+          <circle cx="78" cy="105" r="1.5" fill="white"/>
+          <circle cx="126" cy="105" r="1.5" fill="white"/>
+          <!-- 입 -->
+          <path d="M76 132 Q100 144 124 132" stroke="#1D9E75" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <!-- 이빨 -->
+          <path d="M82 133 L84 139 M92 136 L94 142 M100 137 L100 143 M108 136 L106 142 M118 133 L116 139" stroke="#085041" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- 아가미 -->
+          <path d="M58 108 Q54 118 58 128" stroke="#1D9E75" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+          <path d="M64 105 Q60 118 64 131" stroke="#1D9E75" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+          <!-- 글로우 눈 효과 -->
+          <circle cx="76" cy="107" r="8" fill="none" stroke="rgba(0,229,176,0.4)" stroke-width="1.5"/>
+          <circle cx="124" cy="107" r="8" fill="none" stroke="rgba(0,229,176,0.4)" stroke-width="1.5"/>
         </svg>
       </div>
 
