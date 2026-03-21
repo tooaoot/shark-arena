@@ -3,969 +3,839 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shark Arena — Pacifica</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@fuul/sdk/dist/index.umd.js"></script>
+<title>Pacifica Aquarium</title>
 <style>
-:root {
-  --bg:#080c14;--bg2:#0d1420;--bg3:#111926;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
-  --text:#f0f4ff;--text2:#8899bb;--text3:#4a5a7a;
-  --teal:#00e5b0;--teal2:#00b388;--blue:#3b82f6;
-  --amber:#f59e0b;--red:#ef4444;--purple:#a78bfa;
-  --r:16px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#010d1a;color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;overflow-x:hidden}
-/* 수조관 배경 */
-#aquaBg{position:fixed;inset:0;z-index:0;overflow:hidden;background:linear-gradient(180deg,#010d1a 0%,#011828 30%,#012440 55%,#011828 80%,#010d1a 100%);}
-#aquaBg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 50% at 50% 0%,rgba(0,120,200,0.15) 0%,transparent 65%),radial-gradient(ellipse 50% 70% at 15% 60%,rgba(0,180,150,0.07) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 85% 50%,rgba(0,80,180,0.08) 0%,transparent 60%);pointer-events:none;}
-/* 수면 */
-#aquaBg::after{content:'';position:absolute;top:0;left:0;right:0;height:140px;background:linear-gradient(180deg,rgba(0,160,255,0.08) 0%,transparent 100%);pointer-events:none;}
-/* 빛줄기 */
-.ray{position:absolute;top:0;pointer-events:none;background:linear-gradient(180deg,rgba(100,210,255,0.12) 0%,transparent 75%);transform-origin:top center;animation:rayAnim 5s ease-in-out infinite;}
-@keyframes rayAnim{0%,100%{transform:rotate(-4deg) scaleY(1);}50%{transform:rotate(4deg) scaleY(1.08);}}
-/* 기포 */
-.bbl{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,0.55),rgba(100,200,255,0.05));border:1px solid rgba(120,210,255,0.28);pointer-events:none;animation:bblRise linear infinite;}
-@keyframes bblRise{0%{transform:translateY(0) translateX(0);opacity:0;}8%{opacity:.75;}90%{opacity:.35;}100%{transform:translateY(-105vh) translateX(var(--dx));opacity:0;}}
-/* 해초 */
-.weed{position:absolute;bottom:0;transform-origin:bottom center;animation:weedSway ease-in-out infinite;}
-@keyframes weedSway{0%,100%{transform:rotate(-9deg);}50%{transform:rotate(9deg);}}
-.ws{display:block;border-radius:60% 60% 0 0 / 70% 70% 0 0;margin-bottom:-5px;}
-/* 바닥 */
-.floor{position:absolute;bottom:0;left:0;right:0;height:48px;background:linear-gradient(180deg,transparent,rgba(5,3,1,.85));}
-.rock{position:absolute;bottom:6px;border-radius:50%;background:rgba(22,14,6,.65);}
-/* 물고기 */
-.fish{position:absolute;pointer-events:none;opacity:.45;font-size:15px;animation:fishSwim linear infinite;}
-@keyframes fishSwim{from{transform:translateX(-80px);}to{transform:translateX(calc(100vw + 80px));}}
-.fish.rtl{animation-direction:reverse;}
-/* caustic */
-.caustic{position:absolute;inset:0;pointer-events:none;opacity:.055;background-image:radial-gradient(ellipse 4px 10px at 8% 18%,rgba(150,230,255,1) 0%,transparent 100%),radial-gradient(ellipse 9px 4px at 22% 42%,rgba(150,230,255,1) 0%,transparent 100%),radial-gradient(ellipse 5px 11px at 38% 12%,rgba(150,230,255,1) 0%,transparent 100%),radial-gradient(ellipse 7px 4px at 53% 58%,rgba(150,230,255,1) 0%,transparent 100%),radial-gradient(ellipse 4px 8px at 68% 28%,rgba(150,230,255,1) 0%,transparent 100%),radial-gradient(ellipse 10px 4px at 82% 48%,rgba(150,230,255,1) 0%,transparent 100%),radial-gradient(ellipse 6px 9px at 14% 68%,rgba(150,230,255,1) 0%,transparent 100%),radial-gradient(ellipse 8px 5px at 33% 82%,rgba(150,230,255,1) 0%,transparent 100%),radial-gradient(ellipse 4px 9px at 58% 72%,rgba(150,230,255,1) 0%,transparent 100%),radial-gradient(ellipse 9px 4px at 78% 88%,rgba(150,230,255,1) 0%,transparent 100%),radial-gradient(ellipse 3px 7px at 91% 22%,rgba(150,230,255,1) 0%,transparent 100%),radial-gradient(ellipse 7px 3px at 4% 88%,rgba(150,230,255,1) 0%,transparent 100%);animation:causticAnim 9s ease-in-out infinite alternate;}
-@keyframes jellyFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-20px) scale(1.05);}}
-@keyframes causticAnim{0%{transform:translate(0,0)scale(1);}50%{transform:translate(10px,-7px)scale(1.06);}100%{transform:translate(-5px,9px)scale(.96);}}
-.orb{display:none;}
-.app{position:relative;z-index:2;max-width:480px;margin:0 auto;padding:0 16px 80px}
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400;600&display=swap');
+  :root{ --deep:#010e1a; --glow:#00d4ff; --long:#00e676; --short:#ff4560; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--deep);font-family:'JetBrains Mono',monospace;color:#c8e8f8;overflow:hidden;height:100vh;width:100vw;}
 
-/* HEADER */
-header{display:flex;align-items:center;justify-content:space-between;padding:20px 0 24px;position:relative;z-index:3}
-.logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;letter-spacing:-0.5px}
-.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--teal),var(--blue));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
-.logo em{color:var(--teal);font-style:normal}
-#walletBtn{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
-#walletBtn:hover{border-color:var(--teal);color:var(--teal)}
-#walletBtn.connected{border-color:var(--teal);background:rgba(0,229,176,0.08);color:var(--teal)}
-.wdot{width:7px;height:7px;border-radius:50%;background:var(--text3);transition:background .2s}
-#walletBtn.connected .wdot{background:var(--teal);box-shadow:0 0 6px var(--teal)}
+  /* ── HEADER ── */
+  header{position:fixed;top:0;left:0;right:0;z-index:200;
+    display:flex;align-items:center;justify-content:space-between;padding:12px 24px;
+    background:linear-gradient(180deg,rgba(1,14,26,.98) 0%,transparent 100%);
+    border-bottom:1px solid rgba(0,212,255,.1);}
+  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;
+    color:var(--glow);letter-spacing:.1em;text-shadow:0 0 24px rgba(0,212,255,.5);}
+  .logo span{color:#fff;opacity:.55;}
+  .hstats{display:flex;gap:10px;align-items:center;font-size:.65rem;}
+  .hstat{padding:4px 10px;border-radius:16px;border:1px solid rgba(0,212,255,.18);
+    background:rgba(0,212,255,.05);color:#89bbd0;}
+  .hstat b{color:var(--glow);}
+  .sdot-wrap{display:flex;align-items:center;gap:6px;font-size:.65rem;color:#4a7f90;}
+  .dot{width:7px;height:7px;border-radius:50%;background:#333;transition:all .4s;}
+  .dot.live{background:var(--long);box-shadow:0 0 8px var(--long);animation:blink 2s infinite;}
+  .dot.err{background:var(--short);box-shadow:0 0 8px var(--short);}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* MODAL */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:100;align-items:center;justify-content:center}
-.overlay.show{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:28px 24px;width:320px;animation:slideUp .25s ease}
-@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal h3{font-size:16px;font-weight:600;margin-bottom:6px}
-.modal p{font-size:13px;color:var(--text2);margin-bottom:20px}
-.wopt{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;cursor:pointer;margin-bottom:10px;transition:all .2s}
-.wopt:hover{border-color:var(--teal);background:rgba(0,229,176,0.06)}
-.wopt-logo{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
-.wopt strong{display:block;font-size:14px;font-weight:600}
-.wopt span{font-size:12px;color:var(--text2)}
-.modal-close{width:100%;margin-top:8px;padding:12px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:13px;cursor:pointer}
-.modal-close:hover{color:var(--text)}
+  /* ── TANK ── */
+  #tank{position:relative;width:100vw;height:100vh;overflow:hidden;
+    background:
+      radial-gradient(ellipse at 50% -10%,#062d50 0%,transparent 60%),
+      radial-gradient(ellipse at 15% 85%,#041a10 0%,transparent 40%),
+      linear-gradient(180deg,#031828 0%,#010e1a 100%);}
+  .ray{position:absolute;top:0;pointer-events:none;
+    background:linear-gradient(180deg,rgba(0,212,255,.07) 0%,transparent 100%);
+    transform-origin:top center;animation:sway 9s ease-in-out infinite;}
+  @keyframes sway{0%,100%{transform:rotate(var(--ra,-5deg))scaleX(1)}50%{transform:rotate(calc(var(--ra,-5deg)+5deg))scaleX(1.15)}}
+  .seabed{position:absolute;bottom:0;left:0;right:0;height:90px;
+    background:linear-gradient(180deg,transparent 0%,#041a0c 50%,#020e06 100%);
+    border-top:1px solid rgba(0,180,80,.06);}
+  .bubble{position:absolute;border-radius:50%;pointer-events:none;
+    border:1px solid rgba(0,212,255,.22);
+    background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.16),transparent 60%);
+    animation:rise linear infinite;}
+  @keyframes rise{0%{transform:translateY(0) translateX(0);opacity:.7}100%{transform:translateY(-92vh) translateX(var(--dx,10px));opacity:0}}
+  @keyframes weedy{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(9deg)}}
 
-/* CARDS */
-.card{background:rgba(6,14,26,0.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,160,200,0.14);border-radius:var(--r);padding:20px;margin-bottom:12px;position:relative;overflow:hidden}
-.card-glow::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--teal),transparent);opacity:.5}
-.sec-label{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+  /* ── FISH ── */
+  .fish{position:absolute;cursor:pointer;will-change:transform;transition:filter .2s;}
+  .fish:hover{filter:brightness(1.6) drop-shadow(0 0 18px currentColor);z-index:80;}
+  .fish:hover .fish-card{opacity:1;transform:translateY(-6px) translateX(-50%);}
+  .fish-body{transition:transform .1s;}
+  .fish-card{position:absolute;bottom:calc(100% + 10px);left:50%;
+    transform:translateY(0) translateX(-50%);white-space:nowrap;opacity:0;
+    transition:opacity .2s,transform .2s;pointer-events:none;z-index:300;
+    background:rgba(1,14,26,.96);border:1px solid rgba(0,212,255,.3);
+    border-radius:8px;padding:8px 12px;backdrop-filter:blur(10px);
+    font-size:.67rem;box-shadow:0 4px 20px rgba(0,0,0,.5);}
+  .fc-sym{font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;margin-bottom:4px;}
+  .fc-long{color:var(--long);} .fc-short{color:var(--short);}
+  .fc-row{display:flex;justify-content:space-between;gap:20px;color:#5a8fa0;margin-top:2px;}
+  .fc-row b{color:#c8e8f8;}
+  .fc-pnl{font-size:.8rem;font-weight:600;margin-top:4px;}
+  .pos{color:var(--long);} .neg{color:var(--short);}
 
-/* SHARK CARD */
-.shark-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
-.stage-badge{font-size:11px;font-weight:600;letter-spacing:.5px;padding:4px 10px;border-radius:20px;border:1px solid}
-.shark-visual{display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
-#sharkSvg{width:160px;height:160px;transition:filter .5s}
-.shark-name{text-align:center;font-size:22px;font-weight:700;margin-bottom:4px}
-.shark-next{text-align:center;font-size:13px;color:var(--text2);margin-bottom:20px}
-.prog-row{margin-bottom:0}
-.prog-labels{display:flex;justify-content:space-between;margin-bottom:6px}
-.prog-labels span:first-child{font-size:12px;color:var(--text2)}
-.prog-labels span:last-child{font-size:12px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--teal)}
-.prog-track{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
-.prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--teal),var(--blue));transition:width .8s cubic-bezier(.4,0,.2,1)}
+  /* ── PANEL ── */
+  #panel{position:fixed;right:16px;top:62px;width:215px;z-index:150;
+    background:rgba(3,24,40,.93);border:1px solid rgba(0,212,255,.15);
+    border-radius:10px;padding:13px;backdrop-filter:blur(14px);
+    max-height:calc(100vh - 130px);overflow-y:auto;}
+  #panel::-webkit-scrollbar{width:3px;}
+  #panel::-webkit-scrollbar-thumb{background:rgba(0,212,255,.2);border-radius:2px;}
+  #panel h3{font-family:'Syne',sans-serif;font-size:.73rem;color:var(--glow);
+    letter-spacing:.07em;margin-bottom:9px;padding-bottom:7px;
+    border-bottom:1px solid rgba(0,212,255,.12);}
+  .prow{display:flex;align-items:center;justify-content:space-between;
+    padding:5px 4px;border-radius:5px;cursor:pointer;font-size:.68rem;
+    transition:background .15s;border-bottom:1px solid rgba(255,255,255,.03);}
+  .prow:hover{background:rgba(0,212,255,.07);}
+  .prow-l{display:flex;align-items:center;gap:6px;}
+  .prow-sym{font-family:'Syne',sans-serif;font-weight:700;font-size:.77rem;}
+  .badge{font-size:.57rem;padding:1px 5px;border-radius:3px;font-weight:600;}
+  .bl{background:rgba(0,230,118,.14);color:var(--long);border:1px solid rgba(0,230,118,.28);}
+  .bs{background:rgba(255,69,96,.12);color:var(--short);border:1px solid rgba(255,69,96,.25);}
 
-/* STATS */
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.stat-card{background:rgba(6,14,26,0.68);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(0,160,200,0.12);border-radius:14px;padding:16px}
-.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.stat-value{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace}
-.stat-sub{font-size:11px;color:var(--text3);margin-top:3px}
-.c-teal{color:var(--teal)}.c-text{color:var(--text)}
+  /* ── WALLET MODAL ── */
+  #wallet-modal{position:fixed;inset:0;z-index:600;display:none;
+    align-items:center;justify-content:center;
+    background:rgba(1,14,26,.85);backdrop-filter:blur(8px);}
+  #wallet-modal.show{display:flex;}
+  .modal-box{background:#031828;border:1px solid rgba(0,212,255,.2);
+    border-radius:16px;padding:28px 32px;width:340px;
+    box-shadow:0 20px 60px rgba(0,0,0,.6);}
+  .modal-box h2{font-family:'Syne',sans-serif;font-size:1rem;color:#fff;
+    margin-bottom:6px;}
+  .modal-box p{font-size:.7rem;color:#4a7f90;margin-bottom:22px;}
+  .wallet-option{display:flex;align-items:center;gap:14px;
+    padding:14px 16px;border-radius:10px;cursor:pointer;
+    border:1px solid rgba(0,212,255,.12);background:rgba(0,212,255,.04);
+    transition:all .2s;margin-bottom:10px;}
+  .wallet-option:hover{border-color:rgba(0,212,255,.35);background:rgba(0,212,255,.1);
+    transform:translateY(-1px);}
+  .wallet-option:last-child{margin-bottom:0;}
+  .wicon{width:40px;height:40px;border-radius:10px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:22px;}
+  .wicon-phantom{background:linear-gradient(135deg,#4e44ce,#7b67ee);}
+  .wicon-solflare{background:linear-gradient(135deg,#ff6b1a,#ff9500);}
+  .wicon-manual{background:rgba(0,212,255,.15);}
+  .winfo{flex:1;}
+  .wname{font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:#e0f0ff;}
+  .wdesc{font-size:.63rem;color:#4a7f90;margin-top:2px;}
+  .wstatus{font-size:.62rem;padding:2px 8px;border-radius:10px;
+    background:rgba(0,230,118,.12);color:var(--long);border:1px solid rgba(0,230,118,.25);}
+  .wstatus.na{background:rgba(255,69,96,.1);color:#ff8fa0;border-color:rgba(255,69,96,.2);}
+  .modal-close{display:flex;justify-content:center;margin-top:18px;}
+  .btn-close{background:none;border:1px solid rgba(255,255,255,.1);color:#4a7f90;
+    border-radius:6px;padding:6px 20px;cursor:pointer;font-size:.68rem;
+    font-family:'JetBrains Mono',monospace;transition:all .2s;}
+  .btn-close:hover{color:#c8e8f8;border-color:rgba(255,255,255,.25);}
 
-/* STREAK */
-.streak-row{display:flex;gap:8px}
-.sday{flex:1;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg3);border:1px solid var(--border);border-radius:10px;font-size:10px;color:var(--text3);gap:4px;transition:all .2s}
-.sday .dl{font-size:9px;text-transform:uppercase;letter-spacing:.3px}
-.sday .dc{font-size:14px}
-.sday.done{border-color:rgba(0,229,176,.3);background:rgba(0,229,176,.07)}
-.sday.done .dc,.sday.today .dc{color:var(--teal)}
-.sday.done .dl{color:var(--teal2)}
-.sday.today{border-color:var(--teal);background:rgba(0,229,176,.12)}
-.sday.today .dl{color:var(--teal);font-weight:600}
-.streak-info{margin-top:12px;font-size:13px;color:var(--text2);text-align:center}
-.streak-info strong{color:var(--amber)}
+  /* manual input in modal */
+  .manual-input-wrap{display:none;margin-top:14px;padding-top:14px;
+    border-top:1px solid rgba(0,212,255,.1);}
+  .manual-input-wrap.show{display:block;}
+  .manual-input-wrap label{font-size:.67rem;color:#4a7f90;display:block;margin-bottom:6px;}
+  .manual-input-wrap input{width:100%;background:rgba(0,212,255,.05);
+    border:1px solid rgba(0,212,255,.22);border-radius:6px;padding:7px 10px;
+    color:#c8e8f8;font-family:'JetBrains Mono',monospace;font-size:.7rem;outline:none;
+    transition:border-color .2s;}
+  .manual-input-wrap input:focus{border-color:var(--glow);}
+  .manual-input-wrap button{margin-top:8px;width:100%;background:linear-gradient(135deg,#005580,#003355);
+    border:none;border-radius:6px;color:#c8e8f8;font-family:'JetBrains Mono',monospace;
+    font-size:.7rem;padding:7px;cursor:pointer;transition:filter .15s;}
+  .manual-input-wrap button:hover{filter:brightness(1.4);}
 
-/* EGG */
-.egg-card{display:flex;align-items:center;gap:16px}
-.egg-icon{font-size:40px;line-height:1;flex-shrink:0}
-.egg-title{font-size:15px;font-weight:600;margin-bottom:4px}
-.egg-sub{font-size:13px;color:var(--text2)}
-.egg-tag{display:inline-block;margin-top:8px;font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+  /* ── BOTTOM BAR (connected state) ── */
+  #connect-bar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+    display:flex;align-items:center;gap:10px;z-index:200;
+    background:rgba(1,14,26,.93);border:1px solid rgba(0,212,255,.2);
+    border-radius:12px;padding:10px 16px;backdrop-filter:blur(12px);
+    box-shadow:0 4px 24px rgba(0,0,0,.4);}
+  .btn{background:linear-gradient(135deg,#005580,#003355);border:none;border-radius:6px;
+    color:#c8e8f8;font-family:'JetBrains Mono',monospace;font-size:.7rem;
+    padding:6px 14px;cursor:pointer;transition:filter .15s;white-space:nowrap;}
+  .btn:hover{filter:brightness(1.4);}
+  .btn-demo{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);}
+  .btn-connect{background:linear-gradient(135deg,#004466,#002233);
+    border:1px solid rgba(0,212,255,.3);display:flex;align-items:center;gap:8px;}
+  .btn-disconnect{background:rgba(255,69,96,.1);border:1px solid rgba(255,69,96,.22);
+    color:#ff8fa0;font-size:.65rem;padding:5px 11px;}
+  .connected-info{display:flex;align-items:center;gap:10px;font-size:.68rem;}
+  .wallet-badge{display:flex;align-items:center;gap:6px;
+    background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.18);
+    border-radius:20px;padding:4px 12px;}
+  .wallet-badge-icon{font-size:14px;}
+  .wallet-badge-addr{color:var(--glow);font-size:.68rem;}
 
-/* EVO LIST */
-.evo-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
-.evo-item:last-child{border-bottom:none}
-.evo-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:2px solid var(--border2);background:var(--bg3)}
-.evo-dot.reached{background:var(--teal);border-color:var(--teal);box-shadow:0 0 6px var(--teal)}
-.evo-dot.current{background:var(--amber);border-color:var(--amber);animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 6px var(--amber)}50%{box-shadow:0 0 14px var(--amber)}}
-.evo-name{font-size:13px;font-weight:500;flex:1}
-.evo-name.reached{color:var(--teal)}.evo-name.current{color:var(--amber)}.evo-name.locked{color:var(--text3)}
-.evo-vol{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text3)}
-.evo-vol.reached{color:var(--teal2)}
+  /* ── LEGEND ── */
+  #legend{position:fixed;left:16px;bottom:16px;z-index:150;
+    background:rgba(3,24,40,.88);border:1px solid rgba(0,212,255,.12);
+    border-radius:9px;padding:10px 13px;font-size:.64rem;line-height:2;backdrop-filter:blur(8px);}
+  #legend h4{font-family:'Syne',sans-serif;color:var(--glow);font-size:.7rem;margin-bottom:3px;}
+  .leg{display:flex;align-items:center;gap:7px;color:#4a7f90;}
+  .lc{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 
-/* STATES */
-.not-connected{text-align:center;padding:12px 0 32px}
+  /* ── LOADING ── */
+  #loading{position:fixed;inset:0;z-index:700;display:none;
+    background:rgba(1,14,26,.8);backdrop-filter:blur(6px);
+    align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+  #loading.show{display:flex;}
+  .spinner{width:34px;height:34px;border-radius:50%;
+    border:3px solid rgba(0,212,255,.15);border-top-color:var(--glow);
+    animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #loading p{font-size:.73rem;color:var(--glow);}
 
-/* 히어로 상어 SVG */
-.hero-shark-wrap{position:relative;width:220px;height:220px;margin:0 auto 8px;animation:heroFloat 3.5s ease-in-out infinite}
-@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
-.hero-shark-wrap::after{content:'';position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:100px;height:14px;background:radial-gradient(ellipse,rgba(0,229,176,0.25) 0%,transparent 70%);border-radius:50%;animation:shadowPulse 3.5s ease-in-out infinite}
-@keyframes shadowPulse{0%,100%{width:100px;opacity:.7}50%{width:70px;opacity:.3}}
-#heroSharkSvg{width:220px;height:220px;filter:drop-shadow(0 0 32px rgba(0,229,176,0.35))}
+  /* ── TOAST ── */
+  #toast{position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-8px);
+    background:rgba(255,69,96,.14);border:1px solid rgba(255,69,96,.3);
+    border-radius:8px;padding:10px 18px;font-size:.7rem;color:#ff9ab0;
+    z-index:800;opacity:0;transition:all .3s;backdrop-filter:blur(8px);
+    pointer-events:none;text-align:center;max-width:360px;line-height:1.6;}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-/* 타이틀 */
-.hero-title{font-size:32px;font-weight:700;line-height:1.15;letter-spacing:-1px;margin-bottom:10px}
-.hero-title span{color:var(--teal)}
-.hero-sub{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:28px;max-width:320px;margin-left:auto;margin-right:auto}
-
-/* 스탯 배지 3개 */
-.hero-stats{display:flex;gap:8px;justify-content:center;margin-bottom:28px}
-.hero-stat{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:10px 14px;text-align:center;flex:1}
-.hero-stat-val{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--teal)}
-.hero-stat-label{font-size:10px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
-
-/* 연결 버튼 */
-.connect-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 36px;background:var(--teal);color:#000;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:14px;cursor:pointer;transition:all .25s;box-shadow:0 0 28px rgba(0,229,176,0.25)}
-.connect-btn:hover{background:var(--teal2);transform:translateY(-2px);box-shadow:0 0 40px rgba(0,229,176,0.4)}
-.connect-btn-icon{font-size:18px}
-
-/* 진화 미리보기 */
-.hero-preview{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:24px;flex-wrap:wrap}
-.preview-stage{display:flex;flex-direction:column;align-items:center;gap:4px;opacity:.5;transition:opacity .2s}
-.preview-stage:hover{opacity:1}
-.preview-stage .ps-emoji{font-size:20px}
-.preview-stage .ps-line{width:1px;height:16px;background:var(--border2)}
-.preview-arrow{color:var(--text3);font-size:12px;margin-bottom:20px}
-.loading-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:48px 24px;text-align:center;display:none}
-.spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-size:14px;color:var(--text2)}
-.error-banner{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:12px 16px;font-size:13px;color:#fca5a5;margin-bottom:12px;display:none}
-.refresh-btn{width:100%;padding:12px;background:transparent;border:1px solid var(--border2);border-radius:12px;color:var(--text2);font-family:'Space Grotesk',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;margin-bottom:12px;display:none}
-.refresh-btn:hover{border-color:var(--teal);color:var(--teal)}
-.refresh-btn.show{display:block}
-
-footer{text-align:center;padding:24px 0 0;font-size:12px;color:var(--text3)}
-footer a{color:var(--teal);text-decoration:none}
+  body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.02) 2px,rgba(0,0,0,.02) 4px);}
 </style>
 </head>
 <body>
-<div id="aquaBg">
-  <div class="caustic"></div>
-  <div class="ray" style="left:8%;width:3px;height:72vh;animation-delay:0s;opacity:.9;"></div>
-  <div class="ray" style="left:20%;width:2px;height:54vh;animation-delay:1.2s;opacity:.55;"></div>
-  <div class="ray" style="left:36%;width:4px;height:82vh;animation-delay:2.1s;opacity:.75;"></div>
-  <div class="ray" style="left:52%;width:2px;height:62vh;animation-delay:.6s;opacity:.45;"></div>
-  <div class="ray" style="left:67%;width:3px;height:76vh;animation-delay:1.8s;opacity:.65;"></div>
-  <div class="ray" style="left:84%;width:2px;height:52vh;animation-delay:3.2s;opacity:.5;"></div>
-  <div class="bbl" style="width:5px;height:5px;left:7%;bottom:-8px;animation-duration:7s;animation-delay:0s;--dx:10px;"></div>
-  <div class="bbl" style="width:3px;height:3px;left:16%;bottom:-8px;animation-duration:9.5s;animation-delay:1.5s;--dx:-7px;"></div>
-  <div class="bbl" style="width:7px;height:7px;left:28%;bottom:-8px;animation-duration:6.5s;animation-delay:.8s;--dx:14px;"></div>
-  <div class="bbl" style="width:4px;height:4px;left:42%;bottom:-8px;animation-duration:11s;animation-delay:3s;--dx:-9px;"></div>
-  <div class="bbl" style="width:6px;height:6px;left:55%;bottom:-8px;animation-duration:8s;animation-delay:.3s;--dx:7px;"></div>
-  <div class="bbl" style="width:3px;height:3px;left:69%;bottom:-8px;animation-duration:10.5s;animation-delay:4s;--dx:-11px;"></div>
-  <div class="bbl" style="width:5px;height:5px;left:80%;bottom:-8px;animation-duration:7.8s;animation-delay:2s;--dx:5px;"></div>
-  <div class="bbl" style="width:8px;height:8px;left:91%;bottom:-8px;animation-duration:12s;animation-delay:5s;--dx:-13px;"></div>
-  <div class="weed" style="left:2%;animation-duration:3.8s;animation-delay:0s;">
-    <span class="ws" style="width:16px;height:34px;background:#0a4a2a;display:block;border-radius:60% 60% 0 0;margin-bottom:-4px;"></span>
-    <span class="ws" style="width:16px;height:28px;background:#0d5c34;display:block;border-radius:60% 60% 0 0;margin-bottom:-4px;margin-left:5px;"></span>
-    <span class="ws" style="width:16px;height:32px;background:#0a4a2a;display:block;border-radius:60% 60% 0 0;margin-bottom:-4px;margin-left:-3px;"></span>
-    <span class="ws" style="width:16px;height:26px;background:#0d5c34;display:block;border-radius:60% 60% 0 0;margin-left:4px;"></span>
+
+<!-- LOADING -->
+<div id="loading"><div class="spinner"></div><p id="load-msg">연결 중...</p></div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">PACIFICA <span>AQUARIUM</span></div>
+  <div class="hstats">
+    <div class="hstat">잔고 <b id="h-balance">-</b></div>
+    <div class="hstat">자산 <b id="h-equity">-</b></div>
+    <div class="hstat">미실현 P&L <b id="h-upnl">-</b></div>
+    <div class="hstat">포지션 <b id="h-cnt">0</b>개</div>
   </div>
-  <div class="weed" style="right:3%;animation-duration:4s;animation-delay:.5s;">
-    <span class="ws" style="width:16px;height:38px;background:#0d5c34;display:block;border-radius:60% 60% 0 0;margin-bottom:-4px;"></span>
-    <span class="ws" style="width:16px;height:30px;background:#0a4a2a;display:block;border-radius:60% 60% 0 0;margin-bottom:-4px;margin-left:-4px;"></span>
-    <span class="ws" style="width:16px;height:34px;background:#0d5c34;display:block;border-radius:60% 60% 0 0;margin-left:3px;"></span>
+  <div class="sdot-wrap">
+    <div class="dot" id="sdot"></div>
+    <span id="stxt">대기 중</span>
   </div>
-  <div class="weed" style="right:7%;animation-duration:4.8s;animation-delay:2s;">
-    <span class="ws" style="width:13px;height:28px;background:#0a4a2a;display:block;border-radius:60% 60% 0 0;margin-bottom:-4px;"></span>
-    <span class="ws" style="width:13px;height:22px;background:#0d5c34;display:block;border-radius:60% 60% 0 0;margin-left:3px;"></span>
-  </div>
-  <!-- 물고기 떼 -->
-  <div class="fish" style="top:10%;animation-duration:18s;animation-delay:0s;font-size:28px;">🐠</div>
-  <div class="fish rtl" style="top:15%;animation-duration:22s;animation-delay:4s;font-size:24px;">🐟</div>
-  <div class="fish" style="top:22%;animation-duration:26s;animation-delay:2s;font-size:30px;">🐡</div>
-  <div class="fish rtl" style="top:30%;animation-duration:20s;animation-delay:8s;font-size:26px;">🐠</div>
-  <div class="fish" style="top:38%;animation-duration:24s;animation-delay:1s;font-size:22px;">🐟</div>
-  <div class="fish rtl" style="top:45%;animation-duration:30s;animation-delay:5s;font-size:28px;">🐡</div>
-  <div class="fish" style="top:55%;animation-duration:19s;animation-delay:3s;font-size:24px;">🐠</div>
-  <div class="fish rtl" style="top:62%;animation-duration:28s;animation-delay:11s;font-size:26px;">🐟</div>
-  <!-- 심해 생물 -->
-  <div class="fish" style="top:20%;animation-duration:35s;animation-delay:7s;font-size:32px;opacity:0.35;">🐙</div>
-  <div class="fish rtl" style="top:50%;animation-duration:40s;animation-delay:15s;font-size:30px;opacity:0.3;">🐙</div>
-  <div class="fish" style="top:68%;animation-duration:45s;animation-delay:5s;font-size:28px;opacity:0.25;">🐙</div>
-  <div class="fish rtl" style="top:35%;animation-duration:38s;animation-delay:20s;font-size:26px;opacity:0.3;">🐙</div>
-  <!-- 거북이 -->
-  <div class="fish" style="top:72%;animation-duration:50s;animation-delay:8s;font-size:34px;opacity:0.5;">🐢</div>
-  <div class="fish rtl" style="top:28%;animation-duration:55s;animation-delay:25s;font-size:30px;opacity:0.4;">🐢</div>
-  <!-- 복어 -->
-  <div class="fish" style="top:42%;animation-duration:32s;animation-delay:12s;font-size:28px;opacity:0.5;">🐡</div>
-  <!-- 돌고래 -->
-  <div class="fish rtl" style="top:8%;animation-duration:16s;animation-delay:3s;font-size:36px;opacity:0.45;">🐬</div>
-  <div class="fish" style="top:18%;animation-duration:18s;animation-delay:9s;font-size:32px;opacity:0.4;">🐬</div>
-  <!-- 가오리 -->
-  <div class="fish" style="top:80%;animation-duration:60s;animation-delay:10s;font-size:32px;opacity:0.35;">🦈</div>
-  <!-- 해파리 (천천히 위아래) -->
-  <div style="position:absolute;font-size:30px;left:15%;top:25%;opacity:0.4;animation:jellyFloat 6s ease-in-out infinite;animation-delay:0s;pointer-events:none;">🔵</div>
-  <div style="position:absolute;font-size:24px;left:72%;top:40%;opacity:0.35;animation:jellyFloat 8s ease-in-out infinite;animation-delay:2s;pointer-events:none;">🔵</div>
-  <div style="position:absolute;font-size:28px;left:88%;top:20%;opacity:0.3;animation:jellyFloat 7s ease-in-out infinite;animation-delay:4s;pointer-events:none;">🔵</div>
-  <div style="position:absolute;font-size:22px;left:40%;top:60%;opacity:0.35;animation:jellyFloat 9s ease-in-out infinite;animation-delay:1s;pointer-events:none;">🔵</div>
-  <!-- 불가사리 (바닥 고정) -->
-  <div style="position:absolute;font-size:28px;bottom:14px;left:20%;opacity:0.6;pointer-events:none;">🔶</div>
-  <div style="position:absolute;font-size:22px;bottom:12px;left:55%;opacity:0.5;pointer-events:none;">🔷</div>
-  <div style="position:absolute;font-size:24px;bottom:16px;right:22%;opacity:0.55;pointer-events:none;">🔶</div>
-  <!-- 산호초 -->
-  <div style="position:absolute;font-size:32px;bottom:10px;left:30%;opacity:0.6;pointer-events:none;">🌿</div>
-  <div style="position:absolute;font-size:28px;bottom:8px;right:35%;opacity:0.55;pointer-events:none;">🌿</div>
-  <div style="position:absolute;font-size:24px;bottom:12px;left:62%;opacity:0.5;pointer-events:none;">🌿</div>
-  <div class="floor"></div>
-  <div class="rock" style="left:4%;width:44px;height:20px;"></div>
-  <div class="rock" style="left:11%;width:30px;height:14px;bottom:8px;"></div>
-  <div class="rock" style="right:5%;width:52px;height:22px;"></div>
-  <div class="rock" style="right:13%;width:34px;height:16px;bottom:8px;"></div>
-  <div class="rock" style="left:44%;width:38px;height:18px;bottom:7px;"></div>
+</header>
+
+<!-- TANK -->
+<div id="tank"><div class="seabed"></div></div>
+
+<!-- POSITION PANEL -->
+<div id="panel">
+  <h3>▸ 포지션 목록</h3>
+  <div id="pos-list"><p style="font-size:.66rem;color:#2a5060;text-align:center;padding:12px 0">지갑을 연결하세요</p></div>
 </div>
-<!-- Wallet Modal -->
-<div class="overlay" id="walletModal">
-  <div class="modal">
-    <h3>지갑 연결</h3>
-    <p>Solana 지갑을 선택해 연결하세요.</p>
-    <div class="wopt" onclick="connectWallet('phantom')">
-      <div class="wopt-logo" style="background:#4E44CE">👻</div>
-      <div><strong>Phantom</strong><span>Solana 지갑</span></div>
+
+<!-- LEGEND -->
+<div id="legend">
+  <h4>어항 범례</h4>
+  <div class="leg"><div class="lc" style="background:var(--long)"></div>초록 = LONG (bid)</div>
+  <div class="leg"><div class="lc" style="background:var(--short)"></div>빨강 = SHORT (ask)</div>
+  <div class="leg"><div class="lc" style="background:rgba(200,230,255,.4)"></div>크기 = amount × entry_price</div>
+  <div class="leg"><div class="lc" style="background:var(--glow)"></div>밝기 = 수익률 절대값</div>
+</div>
+
+<!-- WALLET MODAL -->
+<div id="wallet-modal">
+  <div class="modal-box">
+    <h2>지갑 연결</h2>
+    <p>Solana 지갑을 선택하거나 주소를 직접 입력하세요</p>
+
+    <!-- Phantom -->
+    <div class="wallet-option" id="opt-phantom" onclick="connectPhantom()">
+      <div class="wicon wicon-phantom">👻</div>
+      <div class="winfo">
+        <div class="wname">Phantom</div>
+        <div class="wdesc">가장 많이 사용되는 Solana 지갑</div>
+      </div>
+      <div class="wstatus" id="phantom-status">확인 중...</div>
     </div>
-    <div class="wopt" onclick="connectWallet('solflare')">
-      <div class="wopt-logo" style="background:#FC7227">🔥</div>
-      <div><strong>Solflare</strong><span>Solana 지갑</span></div>
+
+    <!-- Solflare -->
+    <div class="wallet-option" id="opt-solflare" onclick="connectSolflare()">
+      <div class="wicon wicon-solflare">🔥</div>
+      <div class="winfo">
+        <div class="wname">Solflare</div>
+        <div class="wdesc">Solana 전용 고성능 지갑</div>
+      </div>
+      <div class="wstatus" id="solflare-status">확인 중...</div>
     </div>
-    <button class="modal-close" onclick="closeModal()">닫기</button>
+
+    <!-- Manual -->
+    <div class="wallet-option" onclick="toggleManual()">
+      <div class="wicon wicon-manual">📋</div>
+      <div class="winfo">
+        <div class="wname">주소 직접 입력</div>
+        <div class="wdesc">Solana 지갑 주소 붙여넣기</div>
+      </div>
+    </div>
+
+    <!-- Manual input -->
+    <div class="manual-input-wrap" id="manual-wrap">
+      <label>Solana Wallet Address</label>
+      <input type="text" id="manual-addr" placeholder="6ETnufiec2Cx...">
+      <button onclick="connectManual()">연결</button>
+    </div>
+
+    <div class="modal-close">
+      <button class="btn-close" onclick="closeModal()">취소</button>
+    </div>
   </div>
 </div>
 
-<div class="app">
-  <header>
-    <div class="logo">
-      <div class="logo-icon">🦈</div>
-      Shark<em>Arena</em>
-    </div>
-    <button id="walletBtn" onclick="openModal()">
-      <div class="wdot"></div>
-      <span id="wBtnTxt">지갑 연결</span>
+<!-- BOTTOM BAR -->
+<div id="connect-bar">
+  <!-- 미연결 -->
+  <div id="bar-disconnected" style="display:flex;align-items:center;gap:10px;">
+    <button class="btn btn-connect" onclick="openModal()">
+      <span>🔗</span> 지갑 연결
     </button>
-  </header>
-
-  <div id="errorBanner" class="error-banner"></div>
-  <button id="refreshBtn" class="refresh-btn" onclick="loadData()">↻ 데이터 새로고침</button>
-
-  <div id="mainContent">
-    <div class="not-connected" id="ncState">
-  <div class="hero-shark-wrap">
-    <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCABvAJoDASIAAhEBAxEB/8QAHAABAAMAAwEBAAAAAAAAAAAAAAYHCAIDBAUB/8QAPBAAAQMDAgMFBQYFAwUAAAAAAQIDBAAFBgcREiExCBNBUWEiMnGBkRQVI0JioRZygpKxQ1LBJDOisuH/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAf/EABkRAQEBAQEBAAAAAAAAAAAAAAARIQExQf/aAAwDAQACEQMRAD8A19SlKBSlKBSlKBSlKBSuEh5mMwt+Q6hppA4lrWoBKR5kmoPH1g03fvwsjWUxVTCvgB7pwNFXkHeHg/8AKgndKDmNxSgUpSgUpSgUpSgUpSgUpSgUpSgUpSgV471c4NmtMm6XKQmPEjNlx1xXQAf5PpXsrNnaTyK5ZdnFt0tx9aiO+QZfAeS3T0CtvyoSSojz+FB8a6XfNNfssXarL3lsxeIvdZUSEpT4Kc299Z8E9B+9fuvWlWJaf6aQJMAy37u5OS0qU66fxAUKKhwj2QBsNthv6mtF6e4nbMLxaJYrW37DKd3XT7zzh5qWo+ZP0Gw8KpDtqS3X/wCGLCwd1vOOvcP6vZQn/wBlVFXRpMqYvTLG13BxTklVtYLi1Hck8A5n5bVJ68toiohWmHCaGyI7CGkj0SkAf4r1VUKV1S5UaI13suQ0w3/vcWEj6mubLrT7SXWXEONqG6VIVuCPQ0HKlKUClKUClKUClKUClRbUXPsdwS1Gbe5f4qge4itbKeePklPl6nkKoKTk2q2tcxyBjcdVlx/i4XHErLaNv1u9Vn9KfnRYuvOtWsGw/iZuF3RImjpEiDvXPntyT/URVTz+0Hld+lqiYLhq3t+SVuIU+v8AtRyHzNSzA+zziVlWiZkDjt/mDnwu+ywk+fAOav6iR6Vb1ut0C2x0x7fCjxGU8ghlsISPkKGM2/cXaQzAlyfc37FHVzCftaIvL+VndfyVU30S0dnYdk8zJ8jurN1ubrRbaUniVwFRBWsqVzKjsBv5E+dXJShSqg120juOoF7t93tt6ZgvQ4/chDqCRvxFQUCOh5/tVv0ojMa8L7Q+Jq76y5C/eGk9Wkz0u8v5H9h/ad65ta7ai4s6I+b4aDtyLhaXHUfnzSflWma6pcWNLZUxKjtPtKGykOICkn5Gi1kKVAzbV6Dec3v1wVAsFvaccYb5ls8IJDbaN+fgCs+P0Fp9jh+c9p7PTJfccjtzymOlSieAcKSQPIb+FWjlWMxLzhM/F4xTbo8qOphBYbADQPkkcqze1F1W0HkKcYbau2NuO8TndpK2Tv4n8zSth16fGoetXUqvtNdXMTzS1OyEy0WyZGQVyospwJKEjqoHopPqOnjtVWaiax5Bmd6OHaWxpCw8otqmoRs66B1KCfcR+o89vKqRbWo2q2H4Oks3Kf8Aabht7MKKONz+rwQP5iPnVGZT2j8wltl6w2aLa4SllDb7yC8pR8tzsnf051ONNOz7Z7SUXfNpCbxcAONUfjP2ZB67qJ5rI9dh6VBLq0jWPWuPYLMwhnFrOSn8FAQgMpI41gDkCsgJHptUMXhoBesqyHTuPeMrWhyRJcUqO4GwgrZ/KogbDnz29NqsCuuJHZiRWosZpLTDKA22hI2CUgbAAeW1dlVCoTrLqBC0+xRVxdCXp8glqDH3/wC45tvuf0jqT8B4iptWYe1eQ3qlizt4S4qyJbQVjbdJAd/E+e22/pReOOl2mlz1Dmr1E1MmPOQXSXW2XDwF5I8TttwNDbkBtuPTrb2nOpuAZDdVYtjD/cORkH7Oz9n7pt1Cevd+ew57ddudTKKbVebAlENxiRbZUfgQWVAoU2RtsNvSq30z0NsWEZgrJGbnLnOtBaYbbqAkMBYKSSR7x4SRvy6nlQWxSlKI+NCyrHJtvuFwi3qE7Etzim5jyXBwMqT7wUenKuEjL8YjWCFf5F7iNWyctCIsha9kvKXvwpT4knY8vQ+VVPpxHji7ay25ISqCZzy+H8vEtDhWPryqLcpHYzZckHdUaVxMKPVJTKITt9SP2osadHMbileSyLcdssFx0kuLjtqUT5lI3r10QpSlAri62280pp1CXG1jZSVDcEeRFcqUFCaodneFerum54hKj2cvr/6uM4FFrn1UgD3f5enwqztMMAsWA2NMC1s8clwAypax+I+rzPkPJI5CvdkWaYrjs+NBvd+hQZMlXC0265zPx/2j1Owr7rLjbzSXWnEuNrG6VJO4I8waKp/tRZ7/AAziIx+3Ob3a8AtbJPtNM9FK+J90fE+VfV7OeBnCsGbdmshF3uQS/L80Db2G/kDz9SaqztHxvuDXLHMontiVbn+5UW3eaE90vZQ2+BCq08y4h1pDragpC0hSSOhB6UPjlSlKIVG9RMKsmdY+u0XpklIPGw+jk4wvbkpJ/wCOhqSUoMvuadaxaZS3JOD3VV1tu/F3Dagdx+plfLf1Sd69ULtD5daF/ZstwrheRyWW0ORz/asHb61pauqTGjyUcEhhp5PktAUP3otUdB7TmIL2E2x3tg+PdJacA+qxVwYjklnyuxMXqxyxJhvbgK4SlSSOqVJPMEeRrPmvmX4iLhLwvFsOttyvSt2HZSIaVFlZ6pQEjdSx5+BqzOzhhV0wvAvs95/DmzXjJXH4t+5BAASfXYbmg99k09tdhtGTW776kd7k0t156Q4UBwLd33CfAnmfrXVP0qtsvTG1YH95ymYcB5p5biEp3kFKiohQPgVHfl4gVX3azs13t8yyagWiQ8Bb3UNOp3JS0sK3bc26AE+yfiKuTTvKYOZYjBv8BQ4X2wHW99y04PeQfgf+KD77aUoQlCRslIAA9K61yYyJCI65DSXl+42VgKVy35Dqa7ay3rxcXMH7Q9qywMuSEdw3IDQXtxbBTagD4biicakoeQ3NZnk68aiZASzh+EKBVySsR3JKh/aAPrXWnCe0Bm44sjv7lqjOdW3X0NbDy7tgf55+dFi8Mx1HwzE2FuXi+xUupHKOyrvHlHyCE8/rtVJZHrnmGZzPuLTWwSWFvez9oU2HHwPMbew38STtUjxHs141DcTIya5Sry91W02Sy0o+pB4j9RVzWGyWewwkwrNbYsCOkbBDDYSPnt1oYz/jnZxm3SFIuGcZFJ+9pCeJIjrDvAo+Li1j2/gNvjXy143rTpC6t7HpSr5ZEniLSEl5G36mj7ST6oNakpQrHGrmrELULDGLXeLA/br3CkpeZdaIU2eRStKgrZSQQd/HmkVoDs4ZIrJNKbWt9zjlwQYb58Twckk+pRw/PepLleDYllLKm79YYUwq/wBQo4HB6hadlD5GuWB4bYMJtK7Zj0VbEdx0ur43VOKUo+ZUfLYUEgpSlEKUpQKUpQZxzHQfLhndxyLDsjahJnSHJHEX3GXmy4riWniR1G5NeYaPa0PDZ/UN3l03uklVaXpRazO72fs+uDRZuueJfaV7yFuPOA/JR518jD7vfNBNRHceyJSpOPT+FRdQk8JHQPIHmOik/wDytX1GdSMJsudY85abuzzHtR5CAO8YX4KSf8jxFCvv26bEuMFmdBkNyYz6Atp1tXElST0INZ/7aloUqzWHIWU7ORn1xlqA6BY4k7/AoP1qMwbjqDoDelQLhHN2xh9zdChuWyPNCv8ATX5pPI/vX1ddNXsJzTSlVrtiparpKeZcTHcZKTGKFgqKle6eW4GxO+9QjQGFTo11xK1XSI2221MhtPBKE7AcSQSPkeVfYqC6AwbhbtIcei3NK0SBHKwhfIpQpalIB8tklNTqqhSlKBSlKBSlKBSlKBSlKBSlKBSlKBSlKDpnw4k+I5EmxmpMdwcK2nUBSVD1BqEWzRzTW23kXeJi0dMpK+NIW+642k+YbUooH05eFT2lAAAGw5ClKUClKUClKUClKUClKUH/2Q==" style="width:260px;height:auto;filter:drop-shadow(0 0 20px rgba(0,229,176,0.6)) drop-shadow(0 0 40px rgba(0,229,176,0.3)) brightness(1.1) invert(0.15) sepia(0.4) saturate(2) hue-rotate(120deg);mix-blend-mode:screen;" alt="shark">
+    <button class="btn btn-demo" onclick="loadDemo()">🐠 데모</button>
   </div>
-  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;">
-    <div style="height:1px;width:40px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15))"></div>
-    <span style="font-size:11px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;">Powered by Pacifica</span>
-    <div style="height:1px;width:40px;background:linear-gradient(90deg,rgba(255,255,255,0.15),transparent)"></div>
-  </div>
-  <div class="hero-title">거래하고<br><span>상어로 진화</span>하세요</div>
-  <div class="hero-sub">Pacifica DEX에서 거래할수록 상어가 성장합니다.<br>7단계 진화로 상어왕을 목표로 하세요.</div>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="hero-stat-val">7</div><div class="hero-stat-label">진화 단계</div></div>
-    <div class="hero-stat"><div class="hero-stat-val">$10K</div><div class="hero-stat-label">첫 상어알</div></div>
-    <div class="hero-stat"><div class="hero-stat-val">7일</div><div class="hero-stat-label">알 부활 조건</div></div>
-  </div>
-  <button class="connect-btn" onclick="openModal()">지갑 연결하기</button>
-  <div style="margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;">
-    <span style="font-size:18px;opacity:.7">👻</span>
-    <span style="font-size:11px;color:var(--text3)">Phantom</span>
-    <span style="color:rgba(255,255,255,0.15);font-size:11px;">·</span>
-    <span style="font-size:18px;opacity:.7">🔥</span>
-    <span style="font-size:11px;color:var(--text3)">Solflare</span>
-  </div>
-  <div class="hero-preview">
-    <div class="preview-stage"><div class="ps-emoji">🥚</div><div style="font-size:9px;color:var(--text3)">알</div></div>
-    <div class="preview-arrow">›</div>
-    <div class="preview-stage"><div class="ps-emoji">🐟</div><div style="font-size:9px;color:var(--text3)">베이비</div></div>
-    <div class="preview-arrow">›</div>
-    <div class="preview-stage"><div class="ps-emoji">🦈</div><div style="font-size:9px;color:var(--text3)">청상어</div></div>
-    <div class="preview-arrow">›</div>
-    <div class="preview-stage"><div class="ps-emoji">🦈</div><div style="font-size:9px;color:var(--text3)">함머헤드</div></div>
-    <div class="preview-arrow">›</div>
-    <div class="preview-stage"><div class="ps-emoji">🦈</div><div style="font-size:9px;color:var(--text3)">백상아리</div></div>
-    <div class="preview-arrow">›</div>
-    <div class="preview-stage"><div class="ps-emoji">🦈</div><div style="font-size:9px;color:var(--text3)">메가로돈</div></div>
-    <div class="preview-arrow">›</div>
-    <div class="preview-stage"><div class="ps-emoji">👑</div><div style="font-size:9px;color:var(--amber)">상어왕</div></div>
-  </div>
-</div>
-
-    <div class="loading-card" id="loadState">
-      <div class="spinner"></div>
-      <div class="loading-text">Pacifica에서 데이터 불러오는 중...</div>
+  <!-- 연결됨 -->
+  <div id="bar-connected" style="display:none;align-items:center;gap:10px;" class="connected-info">
+    <div class="wallet-badge">
+      <span class="wallet-badge-icon" id="wallet-icon">👻</span>
+      <span class="wallet-badge-addr" id="wallet-addr-display">-</span>
     </div>
-
-    <div id="dashboard" style="display:none">
-
-      <!-- SHARK -->
-      <div class="card card-glow">
-        <div class="shark-header">
-          <div>
-            <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">내 상어</div>
-            <div id="stageBadge" class="stage-badge">알</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:11px;color:var(--text3);margin-bottom:2px">총 거래량</div>
-            <div id="totalVolDisplay" style="font-size:18px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--teal)">$0</div>
-          </div>
-        </div>
-        <div class="shark-visual"><svg id="sharkSvg" viewBox="0 0 160 160"></svg></div>
-        <div class="shark-name" id="sharkName">상어 알</div>
-        <div class="shark-next" id="sharkNext">베이비 상어까지 $10,000 남음</div>
-        <div class="prog-row">
-          <div class="prog-labels"><span>다음 단계까지</span><span id="progPct">0%</span></div>
-          <div class="prog-track"><div class="prog-fill" id="progBar" style="width:0%"></div></div>
-        </div>
-      </div>
-
-      <!-- STATS -->
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">계정 잔고</div><div class="stat-value c-text" id="balVal">—</div><div class="stat-sub">USDC</div></div>
-        <div class="stat-card"><div class="stat-label">계정 에쿼티</div><div class="stat-value c-teal" id="eqVal">—</div><div class="stat-sub">USDC</div></div>
-        <div class="stat-card"><div class="stat-label">포지션 수</div><div class="stat-value c-text" id="posVal">—</div><div class="stat-sub">개</div></div>
-        <div class="stat-card"><div class="stat-label">마진 사용</div><div class="stat-value c-text" id="mgnVal">—</div><div class="stat-sub">USDC</div></div>
-      </div>
-
-      <!-- STREAK -->
-      <div class="card">
-        <div class="sec-label">7일 연속 거래 스트릭</div>
-        <div class="streak-row" id="streakRow"></div>
-        <div class="streak-info" id="streakInfo">데이터 로딩 중...</div>
-      </div>
-
-      <!-- EGG -->
-      <div class="card">
-        <div class="egg-card">
-          <div class="egg-icon" id="eggIcon">🥚</div>
-          <div>
-            <div class="egg-title" id="eggTitle">상어알 대기 중</div>
-            <div class="egg-sub" id="eggSub">$10,000 거래 달성 시 상어알 획득</div>
-            <div class="egg-tag" id="eggTag">7일 연속 거래 시 부활</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- EVO LIST -->
-      <div class="card">
-        <div class="sec-label">진화 로드맵</div>
-        <div id="evoList"></div>
-      </div>
-
-      <!-- REFERRAL -->
-      <div class="card" id="referralCard" style="display:none">
-        <div class="sec-label">👥 친구 초대 (레퍼럴)</div>
-        <div style="background:rgba(0,229,176,0.06);border:1px solid rgba(0,229,176,0.2);border-radius:12px;padding:14px 16px;margin-bottom:12px;">
-          <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">내 초대 링크</div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div id="refLink" style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);word-break:break-all;line-height:1.4;">생성 중...</div>
-            <button id="copyRefBtn" onclick="copyRef()" style="flex-shrink:0;padding:7px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text2);font-size:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;white-space:nowrap;">복사</button>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
-          <div class="stat-card"><div class="stat-label">초대한 친구</div><div class="stat-value c-teal" id="refUsers">—</div><div class="stat-sub">명</div></div>
-          <div class="stat-card"><div class="stat-label">레퍼럴 거래량</div><div class="stat-value c-teal" id="refVol">—</div><div class="stat-sub">USD</div></div>
-        </div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.6;">
-          친구가 내 링크로 접속 후 Pacifica에서 거래하면 <span style="color:var(--teal);font-weight:600;">자동 추적</span>됩니다.
-        </div>
-      </div>
-
-      <!-- LEADERBOARD -->
-      <div class="card" id="leaderCard" style="display:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <div class="sec-label" style="margin:0;">🏆 상어왕 리더보드</div>
-          <div style="font-size:11px;color:var(--text3);">Fuul · 거래량 기준</div>
-        </div>
-        <div id="leaderList">
-          <div style="text-align:center;padding:2rem;color:var(--text3);font-size:13px;">로딩 중...</div>
-        </div>
-        <div id="myRankBar" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(0,229,176,0.07);border:1px solid rgba(0,229,176,0.25);border-radius:10px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <span style="font-size:13px;color:var(--teal);font-weight:600;">내 순위</span>
-            <span id="myRankTxt" style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);">—</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
+    <button class="btn" onclick="refreshData()" style="padding:5px 11px;font-size:.64rem;">↻ 새로고침</button>
+    <button class="btn btn-disconnect" onclick="disconnectWallet()">연결 해제</button>
   </div>
-
-  <footer>Powered by <a href="https://pacifica.fi" target="_blank">Pacifica DEX</a> · <a href="https://fuul.xyz" target="_blank" style="color:var(--teal)">Fuul</a> · Shark Arena v1.0</footer>
 </div>
 
 <script>
-const API = 'https://api.pacifica.fi';
-// Fuul API 키 — app.fuul.xyz 에서 발급 후 여기에 입력하세요
-const FUUL_API_KEY = 'YOUR_FUUL_API_KEY';
-const FUUL_PROJECT_SLUG = 'pacifica-shark-arena'; // Fuul 프로젝트 슬러그
-
-// Fuul SDK 초기화
-try {
-  if (window.Fuul) {
-    window.Fuul.init({ apiKey: FUUL_API_KEY });
-  }
-} catch(e) { console.warn('Fuul SDK init skipped:', e.message); }
-
-const STAGES = [
-  {name:'상어 알',    vol:0,         color:'#378ADD',glow:'rgba(55,138,221,.4)'},
-  {name:'베이비 상어',vol:10000,     color:'#00e5b0',glow:'rgba(0,229,176,.4)'},
-  {name:'청상어',     vol:100000,    color:'#3b82f6',glow:'rgba(59,130,246,.4)'},
-  {name:'함머헤드',   vol:500000,    color:'#f59e0b',glow:'rgba(245,158,11,.4)'},
-  {name:'백상아리',   vol:1000000,   color:'#ef4444',glow:'rgba(239,68,68,.4)'},
-  {name:'메가로돈',   vol:3000000,   color:'#a78bfa',glow:'rgba(167,139,250,.4)'},
-  {name:'상어 왕',    vol:10000000,  color:'#fbbf24',glow:'rgba(251,191,36,.5)'},
+// ════════════════════════════════════════
+//  PACIFICA API — GET은 서명 불필요
+// ════════════════════════════════════════
+const BASE = 'https://api.pacifica.fi/api/v1';
+const PROXIES = [
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => u,
 ];
 
-let wallet = null;
+async function pacificaGet(path) {
+  const url = BASE + path;
+  for (const proxy of PROXIES) {
+    try {
+      const r = await fetch(proxy(url), {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return await r.json();
+    } catch (e) { /* try next proxy */ }
+  }
+  throw new Error('모든 프록시 연결 실패');
+}
 
-// ── WALLET ──────────────────────────────────────────────────────────
-function openModal(){document.getElementById('walletModal').classList.add('show')}
-function closeModal(){document.getElementById('walletModal').classList.remove('show')}
-document.getElementById('walletModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal()});
+// ════════════════════════════════════════
+//  DEMO DATA
+// ════════════════════════════════════════
+const DEMO_POS = [
+  {symbol:'BTC', side:'bid',amount:'0.15', entry_price:'83200',current_price:'85400',funding:'12.30', isolated:false},
+  {symbol:'ETH', side:'ask',amount:'2.5',  entry_price:'1920', current_price:'1880', funding:'-3.20', isolated:false},
+  {symbol:'SOL', side:'bid',amount:'45',   entry_price:'132.5',current_price:'141.2',funding:'8.10',  isolated:true },
+  {symbol:'BNB', side:'ask',amount:'8',    entry_price:'598',  current_price:'610',  funding:'-5.40', isolated:false},
+  {symbol:'AAVE',side:'bid',amount:'12',   entry_price:'185',  current_price:'192.3',funding:'2.80',  isolated:false},
+  {symbol:'LINK',side:'bid',amount:'200',  entry_price:'14.2', current_price:'13.8', funding:'-1.20', isolated:false},
+  {symbol:'DOGE',side:'ask',amount:'15000',entry_price:'0.182',current_price:'0.175',funding:'-4.10', isolated:true },
+  {symbol:'AVAX',side:'bid',amount:'30',   entry_price:'22.8', current_price:'25.1', funding:'6.90',  isolated:false},
+];
+const DEMO_ACC = {balance:'4850.23', account_equity:'5124.87', total_margin_used:'2100'};
 
-async function connectWallet(type){
+// ════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════
+let positions=[], fishState={}, fishEls={}, animId=null, ticker=null;
+let connectedWallet=null, walletType=null; // 'phantom' | 'solflare' | 'manual' | 'demo'
+
+// ════════════════════════════════════════
+//  MODAL
+// ════════════════════════════════════════
+function openModal() {
+  document.getElementById('wallet-modal').classList.add('show');
+  checkWalletAvailability();
+}
+function closeModal() {
+  document.getElementById('wallet-modal').classList.remove('show');
+  document.getElementById('manual-wrap').classList.remove('show');
+}
+function toggleManual() {
+  document.getElementById('manual-wrap').classList.toggle('show');
+  setTimeout(() => document.getElementById('manual-addr').focus(), 100);
+}
+
+function checkWalletAvailability() {
+  // Phantom
+  const hasPhantom = !!(window.solana?.isPhantom || window.phantom?.solana?.isPhantom);
+  const pEl = document.getElementById('phantom-status');
+  pEl.textContent = hasPhantom ? '설치됨' : '미설치';
+  pEl.className = 'wstatus' + (hasPhantom ? '' : ' na');
+
+  // Solflare
+  const hasSolflare = !!(window.solflare?.isSolflare);
+  const sEl = document.getElementById('solflare-status');
+  sEl.textContent = hasSolflare ? '설치됨' : '미설치';
+  sEl.className = 'wstatus' + (hasSolflare ? '' : ' na');
+}
+
+// ════════════════════════════════════════
+//  PHANTOM CONNECT
+// ════════════════════════════════════════
+async function connectPhantom() {
+  const provider = window.phantom?.solana || window.solana;
+
+  if (!provider?.isPhantom) {
+    toast('Phantom이 설치되어 있지 않습니다.\nphantom.app에서 설치 후 새로고침해주세요.');
+    return;
+  }
+
   closeModal();
-  try{
-    let pubkey=null;
-    if(type==='phantom'){
-      if(!window.solana?.isPhantom){showError('Phantom 지갑이 설치되지 않았습니다. phantom.app에서 설치해주세요.');return;}
-      const r=await window.solana.connect();
-      pubkey=r.publicKey.toString();
-    } else {
-      if(!window.solflare?.isSolflare){showError('Solflare 지갑이 설치되지 않았습니다. solflare.com에서 설치해주세요.');return;}
-      await window.solflare.connect();
-      pubkey=window.solflare.publicKey.toString();
-    }
-    if(!pubkey)return;
-    wallet=pubkey;
-    const btn=document.getElementById('walletBtn');
-    btn.classList.add('connected');
-    document.getElementById('wBtnTxt').textContent=pubkey.slice(0,4)+'...'+pubkey.slice(-4);
-
-    // Fuul: 페이지뷰 + 지갑 식별
-    await fuulTrack(pubkey, type);
-
-    await loadData();
-  } catch(e){
-    showError('지갑 연결 실패: '+(e.message||'사용자가 취소했습니다.'));
-  }
-}
-
-// ── DATA ─────────────────────────────────────────────────────────────
-async function loadData(){
-  if(!wallet)return;
-  showLoad(true);hideError();
-  try{
-    const [acc,trades]=await Promise.all([fetchAccount(),fetchTrades()]);
-    renderDashboard(acc,trades);
-    showLoad(false);
-    document.getElementById('refreshBtn').classList.add('show');
-    // Fuul 기능 로드
-    await Promise.all([loadReferral(), loadLeaderboard()]);
-  } catch(e){
-    showLoad(false);
-    showError('데이터 로드 실패: '+(e.message||'네트워크 오류'));
-    renderFallback();
-    // fallback에서도 Fuul 기능은 표시
-    await Promise.all([loadReferral(), loadLeaderboard()]);
-  }
-}
-
-async function fetchAccount(){
-  const r=await fetch(`${API}/api/v1/account?account=${wallet}`);
-  if(!r.ok) throw new Error('Account API '+r.status);
-  const j=await r.json();
-  if(!j.success) throw new Error(j.error||'Account error');
-  return j.data?.[0]||{};
-}
-
-async function fetchTrades(){
-  let all=[],cursor=null,hasMore=true,pages=0;
-  while(hasMore&&pages<20){
-    const url=new URL(`${API}/api/v1/trades/history`);
-    url.searchParams.set('account',wallet);
-    url.searchParams.set('limit','100');
-    if(cursor)url.searchParams.set('cursor',cursor);
-    const r=await fetch(url.toString());
-    if(!r.ok) throw new Error('Trades API '+r.status);
-    const j=await r.json();
-    if(!j.success) throw new Error(j.error||'Trades error');
-    all=all.concat(j.data||[]);
-    hasMore=j.has_more;cursor=j.next_cursor;pages++;
-    if(!(j.data?.length))break;
-  }
-  return all;
-}
-
-// ── CALC ─────────────────────────────────────────────────────────────
-function calcVol(trades){
-  return trades.reduce((s,t)=>s+parseFloat(t.price||0)*parseFloat(t.amount||0),0);
-}
-
-function calcStreak(trades){
-  const days=new Set();
-  trades.forEach(t=>{
-    const d=new Date(t.created_at);
-    days.add(`${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`);
-  });
-  const today=new Date();
-  const week=[];
-  for(let i=6;i>=0;i--){
-    const d=new Date(today);d.setUTCDate(d.getUTCDate()-i);
-    const k=`${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`;
-    week.push({traded:days.has(k),isToday:i===0});
-  }
-  let cons=0;
-  for(let i=0;i<100;i++){
-    const d=new Date(today);d.setUTCDate(d.getUTCDate()-i);
-    const k=`${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`;
-    if(days.has(k))cons++;else break;
-  }
-  return{week,cons};
-}
-
-function stageOf(vol){
-  let s=STAGES[0];
-  for(let i=STAGES.length-1;i>=0;i--){if(vol>=STAGES[i].vol){s=STAGES[i];break;}}
-  return s;
-}
-function stageIdxOf(vol){
-  let idx=0;
-  for(let i=STAGES.length-1;i>=0;i--){if(vol>=STAGES[i].vol){idx=i;break;}}
-  return idx;
-}
-function nextStageOf(vol){
-  for(let i=0;i<STAGES.length;i++){if(vol<STAGES[i].vol)return STAGES[i];}
-  return null;
-}
-
-// ── RENDER ───────────────────────────────────────────────────────────
-function renderDashboard(acc,trades){
-  document.getElementById('ncState').style.display='none';
-  document.getElementById('dashboard').style.display='block';
-
-  const vol=calcVol(trades);
-  const stage=stageOf(vol);
-  const idx=stageIdxOf(vol);
-  const next=nextStageOf(vol);
-  const streak=calcStreak(trades);
-
-  // header
-  document.getElementById('totalVolDisplay').textContent='$'+fmt(vol);
-  const badge=document.getElementById('stageBadge');
-  badge.textContent=stage.name;
-  badge.style.borderColor=stage.color;
-  badge.style.color=stage.color;
-  badge.style.background=stage.color+'22';
-
-  // shark
-  drawShark(idx,stage.color);
-  document.getElementById('sharkSvg').style.filter=`drop-shadow(0 0 24px ${stage.glow})`;
-  document.getElementById('sharkName').textContent=stage.name;
-  if(next){
-    document.getElementById('sharkNext').textContent=`${next.name}까지 $${fmt(next.vol-vol)} 남음`;
-  } else {
-    document.getElementById('sharkNext').textContent='최고 등급 달성! 🎉';
-  }
-
-  // progress
-  let pct=0;
-  if(next){const prev=stage.vol;pct=Math.min(100,Math.round(((vol-prev)/(next.vol-prev))*100));}
-  else pct=100;
-  document.getElementById('progBar').style.width=pct+'%';
-  document.getElementById('progPct').textContent=pct+'%';
-
-  // stats
-  document.getElementById('balVal').textContent=acc.balance?fmtM(acc.balance):'—';
-  document.getElementById('eqVal').textContent=acc.account_equity?fmtM(acc.account_equity):'—';
-  document.getElementById('posVal').textContent=acc.positions_count??'—';
-  document.getElementById('mgnVal').textContent=acc.total_margin_used?fmtM(acc.total_margin_used):'—';
-
-  // streak
-  renderStreak(streak);
-
-  // egg
-  renderEgg(vol,streak.cons);
-
-  // evo list
-  renderEvo(vol);
-}
-
-function renderFallback(){
-  document.getElementById('ncState').style.display='none';
-  document.getElementById('dashboard').style.display='block';
-  drawShark(0,STAGES[0].color);
-  renderStreak({week:Array(7).fill({traded:false,isToday:false}),cons:0});
-  renderEvo(0);
-}
-
-function renderStreak({week,cons}){
-  const labels=['월','화','수','목','금','토','일'];
-  const row=document.getElementById('streakRow');
-  row.innerHTML='';
-  week.forEach((d,i)=>{
-    const el=document.createElement('div');
-    el.className='sday'+(d.isToday?' today':d.traded?' done':'');
-    el.innerHTML=`<div class="dl">${labels[i]}</div><div class="dc">${d.traded?'✓':'·'}</div>`;
-    row.appendChild(el);
-  });
-  const info=document.getElementById('streakInfo');
-  if(cons>=7){info.innerHTML='🎉 <strong>7일 연속 달성!</strong> 상어알이 부활했어요!';}
-  else if(cons>0){info.innerHTML=`현재 <strong>${cons}일</strong> 연속 · ${7-cons}일 더 하면 상어알 부활!`;}
-  else{info.textContent='오늘 Pacifica에서 거래하면 스트릭이 시작돼요!';}
-}
-
-function renderEgg(vol,cons){
-  const icon=document.getElementById('eggIcon');
-  const title=document.getElementById('eggTitle');
-  const sub=document.getElementById('eggSub');
-  const tag=document.getElementById('eggTag');
-  if(vol>=10000){
-    icon.textContent='🦈';
-    title.textContent='상어알 획득 완료!';
-    sub.textContent='거래 $10,000 달성으로 상어알을 얻었습니다.';
-    tag.textContent=cons>=7?'✓ 7일 연속 달성 — 상어알 부활!':'7일 연속 거래 시 부활 (현재 '+cons+'일)';
-    tag.style.background=cons>=7?'rgba(0,229,176,.15)':'rgba(245,158,11,.15)';
-    tag.style.color=cons>=7?'var(--teal)':'var(--amber)';
-    tag.style.borderColor=cons>=7?'rgba(0,229,176,.3)':'rgba(245,158,11,.3)';
-  } else {
-    icon.textContent='🥚';
-    title.textContent='상어알 대기 중';
-    sub.textContent='$'+fmt(10000-vol)+' 더 거래하면 상어알 획득!';
-  }
-}
-
-function renderEvo(vol){
-  const list=document.getElementById('evoList');
-  const idx=stageIdxOf(vol);
-  list.innerHTML='';
-  STAGES.forEach((s,i)=>{
-    const reached=vol>=s.vol,cur=i===idx;
-    const el=document.createElement('div');
-    el.className='evo-item';
-    el.innerHTML=`<div class="evo-dot ${cur?'current':reached?'reached':''}"></div>
-      <div class="evo-name ${cur?'current':reached?'reached':'locked'}">${s.name}</div>
-      <div class="evo-vol ${reached?'reached':''}">${s.vol===0?'시작':'$'+fmt(s.vol)}</div>`;
-    list.appendChild(el);
-  });
-}
-
-// ── SHARK SVG ────────────────────────────────────────────────────────
-function drawShark(idx,c){
-  const svg=document.getElementById('sharkSvg');
-  const dk=dk_(c),lt=lt_(c);
-  const shapes=[
-    // 0 Egg
-    `<ellipse cx="80" cy="92" rx="44" ry="54" fill="${lt}" stroke="${c}" stroke-width="3"/>
-     <ellipse cx="80" cy="80" rx="22" ry="28" fill="white" opacity="0.12"/>
-     <ellipse cx="66" cy="74" rx="7" ry="9" fill="${dk}"/>
-     <ellipse cx="66" cy="72" rx="3" ry="3.5" fill="white"/>
-     <ellipse cx="94" cy="74" rx="7" ry="9" fill="${dk}"/>
-     <ellipse cx="94" cy="72" rx="3" ry="3.5" fill="white"/>
-     <path d="M66 100 Q80 110 94 100" stroke="${c}" stroke-width="3" fill="none" stroke-linecap="round"/>
-     <path d="M80 38 L77 50" stroke="${c}" stroke-width="2" opacity="0.5"/>
-     <path d="M88 42 L87 53" stroke="${c}" stroke-width="2" opacity="0.5"/>`,
-    // 1 Baby
-    `<ellipse cx="80" cy="96" rx="52" ry="38" fill="${lt}" stroke="${c}" stroke-width="2.5"/>
-     <polygon points="80,30 65,76 95,76" fill="${c}" stroke="${dk}" stroke-width="2"/>
-     <ellipse cx="55" cy="92" rx="12" ry="9" fill="${lt}" stroke="${c}" stroke-width="2"/>
-     <ellipse cx="105" cy="92" rx="12" ry="9" fill="${lt}" stroke="${c}" stroke-width="2"/>
-     <ellipse cx="62" cy="90" rx="7" ry="8" fill="${dk}"/>
-     <ellipse cx="62" cy="88" rx="3" ry="3.5" fill="white"/>
-     <ellipse cx="98" cy="90" rx="7" ry="8" fill="${dk}"/>
-     <ellipse cx="98" cy="88" rx="3" ry="3.5" fill="white"/>
-     <path d="M62 110 Q80 122 98 110" stroke="${c}" stroke-width="3" fill="none" stroke-linecap="round"/>`,
-    // 2 Blue shark
-    `<ellipse cx="80" cy="98" rx="56" ry="40" fill="${lt}" stroke="${c}" stroke-width="2.5"/>
-     <polygon points="80,26 62,78 98,78" fill="${c}" stroke="${dk}" stroke-width="2"/>
-     <polygon points="22,80 6,58 28,96" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
-     <polygon points="138,80 154,58 132,96" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
-     <ellipse cx="58" cy="92" rx="8" ry="9" fill="${dk}"/>
-     <ellipse cx="58" cy="90" rx="3.5" ry="4" fill="white"/>
-     <ellipse cx="102" cy="92" rx="8" ry="9" fill="${dk}"/>
-     <ellipse cx="102" cy="90" rx="3.5" ry="4" fill="white"/>
-     <path d="M58 114 Q80 128 102 114" stroke="${c}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-     <path d="M62 118 L65 128 M80 121 L80 132 M98 118 L95 128" stroke="${dk}" stroke-width="2" stroke-linecap="round"/>`,
-    // 3 Hammerhead
-    `<ellipse cx="80" cy="98" rx="58" ry="40" fill="${lt}" stroke="${c}" stroke-width="3"/>
-     <polygon points="80,22 60,78 100,78" fill="${c}" stroke="${dk}" stroke-width="2"/>
-     <polygon points="20,78 2,54 24,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
-     <polygon points="140,78 158,54 136,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
-     <rect x="30" y="80" width="100" height="18" rx="4" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
-     <ellipse cx="38" cy="89" rx="8" ry="9" fill="${dk}"/>
-     <ellipse cx="38" cy="87" rx="3.5" ry="4" fill="white"/>
-     <ellipse cx="122" cy="89" rx="8" ry="9" fill="${dk}"/>
-     <ellipse cx="122" cy="87" rx="3.5" ry="4" fill="white"/>
-     <path d="M55 116 Q80 132 105 116" stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"/>`,
-    // 4 Great white
-    `<ellipse cx="80" cy="98" rx="60" ry="42" fill="${lt}" stroke="${c}" stroke-width="3"/>
-     <polygon points="80,18 58,78 102,78" fill="${c}" stroke="${dk}" stroke-width="2.5"/>
-     <polygon points="16,76 -2,50 20,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
-     <polygon points="144,76 162,50 140,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
-     <polygon points="80,150 68,118 92,118" fill="${c}" stroke="${dk}" stroke-width="2"/>
-     <ellipse cx="56" cy="90" rx="9" ry="10" fill="${dk}"/>
-     <ellipse cx="56" cy="87" rx="4" ry="4.5" fill="white"/>
-     <ellipse cx="56" cy="87" rx="1.5" ry="2" fill="${dk}"/>
-     <ellipse cx="104" cy="90" rx="9" ry="10" fill="${dk}"/>
-     <ellipse cx="104" cy="87" rx="4" ry="4.5" fill="white"/>
-     <ellipse cx="104" cy="87" rx="1.5" ry="2" fill="${dk}"/>
-     <path d="M55 116 Q80 134 105 116" stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"/>
-     <path d="M59 120 L62 132 M80 123 L80 136 M101 120 L98 132" stroke="${dk}" stroke-width="2.5" stroke-linecap="round"/>`,
-    // 5 Megalodon
-    `<ellipse cx="80" cy="99" rx="62" ry="44" fill="${lt}" stroke="${c}" stroke-width="3.5"/>
-     <polygon points="80,14 56,78 104,78" fill="${c}" stroke="${dk}" stroke-width="3"/>
-     <polygon points="12,74 -8,44 16,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
-     <polygon points="148,74 168,44 144,96" fill="${c}" stroke="${dk}" stroke-width="2"/>
-     <polygon points="80,154 66,118 94,118" fill="${c}" stroke="${dk}" stroke-width="2"/>
-     <polygon points="80,154 74,132 86,132" fill="${dk}" stroke="${dk}" stroke-width="1"/>
-     <ellipse cx="52" cy="90" rx="10" ry="11" fill="${dk}"/>
-     <ellipse cx="52" cy="86" rx="4.5" ry="5" fill="white"/>
-     <ellipse cx="52" cy="86" rx="1.8" ry="2.2" fill="${dk}"/>
-     <ellipse cx="108" cy="90" rx="10" ry="11" fill="${dk}"/>
-     <ellipse cx="108" cy="86" rx="4.5" ry="5" fill="white"/>
-     <ellipse cx="108" cy="86" rx="1.8" ry="2.2" fill="${dk}"/>
-     <path d="M52 118 Q80 138 108 118" stroke="${c}" stroke-width="5" fill="none" stroke-linecap="round"/>
-     <path d="M56 123 L60 135 M80 126 L80 139 M104 123 L100 135" stroke="${dk}" stroke-width="2.5" stroke-linecap="round"/>`,
-    // 6 Shark King
-    `<ellipse cx="80" cy="99" rx="62" ry="44" fill="${lt}" stroke="${c}" stroke-width="4"/>
-     <polygon points="80,12 54,78 106,78" fill="${c}" stroke="${dk}" stroke-width="3"/>
-     <polygon points="8,72 -14,40 14,96" fill="${c}" stroke="${dk}" stroke-width="2.5"/>
-     <polygon points="152,72 174,40 146,96" fill="${c}" stroke="${dk}" stroke-width="2.5"/>
-     <polygon points="80,156 64,118 96,118" fill="${c}" stroke="${dk}" stroke-width="2.5"/>
-     <polygon points="80,156 72,134 88,134" fill="${dk}" stroke="${dk}" stroke-width="1.5"/>
-     <polygon points="40,42 34,22 50,32" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
-     <polygon points="120,42 126,22 110,32" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
-     <polygon points="80,14 74,26 86,26" fill="${c}" stroke="${dk}" stroke-width="1.5"/>
-     <ellipse cx="50" cy="90" rx="11" ry="13" fill="${dk}"/>
-     <ellipse cx="50" cy="85" rx="5" ry="5.5" fill="white"/>
-     <ellipse cx="50" cy="85" rx="2" ry="2.5" fill="${dk}"/>
-     <ellipse cx="110" cy="90" rx="11" ry="13" fill="${dk}"/>
-     <ellipse cx="110" cy="85" rx="5" ry="5.5" fill="white"/>
-     <ellipse cx="110" cy="85" rx="2" ry="2.5" fill="${dk}"/>
-     <path d="M50 120 Q80 142 110 120" stroke="${c}" stroke-width="6" fill="none" stroke-linecap="round"/>
-     <path d="M55 126 L59 140 M80 129 L80 144 M105 126 L101 140" stroke="${dk}" stroke-width="3" stroke-linecap="round"/>`,
-  ];
-  svg.innerHTML=shapes[Math.min(idx,shapes.length-1)];
-}
-
-// ── UTILS ─────────────────────────────────────────────────────────────
-function fmt(n){
-  if(n>=1000000)return(n/1000000).toFixed(1)+'M';
-  if(n>=1000)return(n/1000).toFixed(1)+'K';
-  return Math.round(n).toLocaleString();
-}
-function fmtM(v){return parseFloat(v).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});}
-
-function lt_(hex){
-  if(!hex.startsWith('#'))return 'rgba(100,100,200,0.25)';
-  const n=parseInt(hex.slice(1),16);
-  const r=Math.min(255,((n>>16)&255)+80);
-  const g=Math.min(255,((n>>8)&255)+80);
-  const b=Math.min(255,(n&255)+80);
-  return `rgba(${r},${g},${b},0.28)`;
-}
-function dk_(hex){
-  if(!hex.startsWith('#'))return '#334';
-  const n=parseInt(hex.slice(1),16);
-  const r=Math.max(0,((n>>16)&255)-70);
-  const g=Math.max(0,((n>>8)&255)-70);
-  const b=Math.max(0,(n&255)-70);
-  return `rgb(${r},${g},${b})`;
-}
-
-function showLoad(show){
-  document.getElementById('loadState').style.display=show?'block':'none';
-  document.getElementById('ncState').style.display=(!show&&!wallet)?'block':'none';
-  if(show)document.getElementById('dashboard').style.display='none';
-}
-function showError(msg){const el=document.getElementById('errorBanner');el.textContent='⚠ '+msg;el.style.display='block';}
-function hideError(){document.getElementById('errorBanner').style.display='none';}
-
-// ── FUUL INTEGRATION ──────────────────────────────────────────────────
-
-// 1. 페이지 로드 시 pageview 전송 (레퍼럴 코드 URL 캡처)
-window.addEventListener('load', async () => {
+  showLoad('Phantom 연결 중...');
   try {
-    if (window.Fuul) await window.Fuul.sendPageview();
-  } catch(e) { console.warn('Fuul pageview:', e.message); }
-});
+    const resp = await provider.connect();
+    connectedWallet = resp.publicKey.toString();
+    walletType = 'phantom';
+    showConnectedBar('👻', connectedWallet);
+    await loadFromWallet(connectedWallet);
+  } catch(e) {
+    hideLoad();
+    if (e.code === 4001) toast('연결이 취소되었습니다.');
+    else toast('Phantom 연결 오류: ' + e.message);
+  }
+}
 
-// 2. 지갑 연결 시 Fuul에 유저 식별
-async function fuulTrack(pubkey, walletType) {
+// ════════════════════════════════════════
+//  SOLFLARE CONNECT
+// ════════════════════════════════════════
+async function connectSolflare() {
+  const provider = window.solflare;
+
+  if (!provider?.isSolflare) {
+    toast('Solflare가 설치되어 있지 않습니다.\nsolflare.com에서 설치 후 새로고침해주세요.');
+    return;
+  }
+
+  closeModal();
+  showLoad('Solflare 연결 중...');
   try {
-    if (!window.Fuul) return;
-    const provider = walletType === 'phantom' ? window.solana : window.solflare;
-    const message = 'Shark Arena: verify identity';
-    const encoded = new TextEncoder().encode(message);
-    const { signature } = await provider.signMessage(encoded, 'utf8');
-    const sigHex = Buffer.from(signature).toString('hex');
-    await window.Fuul.identifyUser({
-      identifier: pubkey,
-      identifierType: 'solana_address',
-      signature: sigHex,
-      message,
+    await provider.connect();
+    if (!provider.isConnected) throw new Error('연결 실패');
+    connectedWallet = provider.publicKey.toString();
+    walletType = 'solflare';
+    showConnectedBar('🔥', connectedWallet);
+    await loadFromWallet(connectedWallet);
+  } catch(e) {
+    hideLoad();
+    if (e.code === 4001) toast('연결이 취소되었습니다.');
+    else toast('Solflare 연결 오류: ' + e.message);
+  }
+}
+
+// ════════════════════════════════════════
+//  MANUAL ADDRESS
+// ════════════════════════════════════════
+async function connectManual() {
+  const addr = document.getElementById('manual-addr').value.trim();
+  if (!addr || addr.length < 32) { toast('올바른 Solana 지갑 주소를 입력하세요.'); return; }
+  closeModal();
+  connectedWallet = addr;
+  walletType = 'manual';
+  showConnectedBar('📋', connectedWallet);
+  await loadFromWallet(connectedWallet);
+}
+
+// ════════════════════════════════════════
+//  DEMO MODE
+// ════════════════════════════════════════
+function loadDemo() {
+  connectedWallet = 'DEMO';
+  walletType = 'demo';
+  positions = DEMO_POS.map(p => ({...p}));
+  updateHeader(DEMO_ACC);
+  setStatus('live', 'DEMO MODE');
+  showConnectedBar('🐠', 'DEMO MODE');
+  buildTank();
+  clearInterval(ticker);
+  ticker = setInterval(() => {
+    positions = positions.map(p => {
+      const d = 1 + (Math.random() - .5) * .004;
+      const dec = p.symbol === 'DOGE' ? 4 : 2;
+      return {...p, current_price: (parseFloat(p.current_price) * d).toFixed(dec)};
     });
-    console.log('Fuul: user identified', pubkey);
-  } catch(e) {
-    console.warn('Fuul identifyUser skipped:', e.message);
-  }
+    updatePanelOnly();
+  }, 2000);
 }
 
-// 3. 레퍼럴 링크 생성
-async function loadReferral() {
-  if (!wallet) return;
-  document.getElementById('referralCard').style.display = 'block';
+// ════════════════════════════════════════
+//  LOAD FROM WALLET ADDRESS
+// ════════════════════════════════════════
+async function loadFromWallet(wallet) {
+  showLoad('포지션 조회 중...');
+  setStatus('', '연결 중...');
   try {
-    let refCode = wallet.slice(0, 8); // fallback: 지갑 앞 8자리
-    if (window.Fuul) {
-      try {
-        const result = await window.Fuul.getAffiliateLink({ identifier: wallet, identifierType: 'solana_address' });
-        if (result?.url) {
-          document.getElementById('refLink').textContent = result.url;
-          loadReferralStats();
-          return;
-        }
-      } catch(e) { console.warn('Fuul affiliate link:', e.message); }
-    }
-    // Fuul API 키 미설정 시 데모 링크 표시
-    const demoLink = `${window.location.origin}${window.location.pathname}?referrer=${refCode}`;
-    document.getElementById('refLink').textContent = demoLink;
-    loadReferralStats();
+    setLoad('Pacifica API 호출 중...');
+    const [posRes, accRes] = await Promise.all([
+      pacificaGet(`/positions?account=${wallet}`),
+      pacificaGet(`/account?account=${wallet}`),
+    ]);
+    if (!posRes.success) throw new Error(posRes.error || 'positions 조회 실패');
+    if (!accRes.success) throw new Error(accRes.error || 'account 조회 실패');
+
+    let priceMap = {};
+    try {
+      const prRes = await pacificaGet('/prices');
+      priceMap = buildPriceMap(prRes.data);
+    } catch(_) {}
+
+    positions = (posRes.data || []).map(p => ({
+      ...p, current_price: priceMap[p.symbol] || p.entry_price
+    }));
+
+    updateHeader(accRes.data);
+    setStatus('live', walletType === 'phantom' ? 'Phantom 연결' : walletType === 'solflare' ? 'Solflare 연결' : '연결됨');
+    buildTank();
+    hideLoad();
+
+    clearInterval(ticker);
+    ticker = setInterval(refreshData, 5000);
   } catch(e) {
-    document.getElementById('refLink').textContent = '링크 생성 실패 (Fuul API 키 필요)';
+    hideLoad();
+    setStatus('err', '연결 실패');
+    toast('API 연결 실패: ' + e.message + '\n\nCORS 제한으로 인해 로컬 서버 실행이 필요하거나,\n데모 모드를 사용하세요 🐠', 6000);
   }
 }
 
-// 4. 레퍼럴 통계 로드
-async function loadReferralStats() {
+async function refreshData() {
+  if (!connectedWallet || walletType === 'demo') return;
   try {
-    if (!window.Fuul) return;
-    const data = await window.Fuul.getReferredMetrics({
-      identifier: wallet,
-      identifierType: 'solana_address',
-    });
-    if (data) {
-      document.getElementById('refUsers').textContent = data.referred_users ?? '0';
-      const vol = parseFloat(data.referred_volume ?? 0);
-      document.getElementById('refVol').textContent = vol >= 1000 ? (vol/1000).toFixed(1)+'K' : vol.toFixed(0);
+    const [posRes, prRes] = await Promise.all([
+      pacificaGet(`/positions?account=${connectedWallet}`),
+      pacificaGet('/prices').catch(() => ({data:{}})),
+    ]);
+    if (posRes.success) {
+      const pm = buildPriceMap(prRes.data);
+      positions = (posRes.data || []).map(p => ({...p, current_price: pm[p.symbol] || p.entry_price}));
+      updatePanelOnly();
     }
-  } catch(e) {
-    document.getElementById('refUsers').textContent = '0';
-    document.getElementById('refVol').textContent = '$0';
-    console.warn('Fuul referral stats:', e.message);
-  }
+  } catch(_) {}
 }
 
-// 5. 리더보드 로드
-async function loadLeaderboard() {
-  document.getElementById('leaderCard').style.display = 'block';
+function buildPriceMap(data) {
+  if (!data) return {};
+  if (Array.isArray(data)) {
+    const m = {};
+    data.forEach(p => { m[p.symbol] = p.price || p.mark_price || p.index_price || p.last_price; });
+    return m;
+  }
+  return typeof data === 'object' ? data : {};
+}
+
+// ════════════════════════════════════════
+//  DISCONNECT
+// ════════════════════════════════════════
+async function disconnectWallet() {
+  clearInterval(ticker);
+  // Wallet provider disconnect
   try {
-    let entries = [];
-    if (window.Fuul) {
-      try {
-        const data = await window.Fuul.getVolumeLeaderboard({ limit: 10 });
-        entries = data?.results ?? [];
-      } catch(e) { console.warn('Fuul leaderboard:', e.message); }
+    if (walletType === 'phantom') {
+      const p = window.phantom?.solana || window.solana;
+      if (p) await p.disconnect();
     }
-    // Fuul 연동 전 데모 데이터
-    if (!entries.length) {
-      entries = [
-        { identifier: 'SharkKing...8a2F', volume: 12400000 },
-        { identifier: 'Mega...3bC9',      volume: 5800000  },
-        { identifier: 'GrWht...7dE1',     volume: 3200000  },
-        { identifier: 'Hamm...2aA4',      volume: 980000   },
-        { identifier: 'Blue...9fB6',      volume: 420000   },
-      ];
+    if (walletType === 'solflare') {
+      const s = window.solflare;
+      if (s?.isConnected) await s.disconnect();
     }
-    renderLeaderboard(entries);
-  } catch(e) {
-    document.getElementById('leaderList').innerHTML = '<div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px;">리더보드 데이터 없음</div>';
-  }
+  } catch(_) {}
+
+  connectedWallet = null; walletType = null;
+  positions = [];
+  if (animId) cancelAnimationFrame(animId);
+  Object.values(fishEls).forEach(e => e.remove());
+  fishEls = {}; fishState = {};
+  document.querySelectorAll('.ray,.weed-el').forEach(e => e.remove());
+  document.getElementById('pos-list').innerHTML = '<p style="font-size:.66rem;color:#2a5060;text-align:center;padding:12px 0">지갑을 연결하세요</p>';
+  ['h-balance','h-equity','h-upnl'].forEach(id => document.getElementById(id).textContent = '-');
+  document.getElementById('h-cnt').textContent = '0';
+  setStatus('', '대기 중');
+  document.getElementById('bar-connected').style.display = 'none';
+  document.getElementById('bar-disconnected').style.display = 'flex';
 }
 
-function renderLeaderboard(entries) {
-  const medals = ['🥇','🥈','🥉'];
-  const stageEmoji = (vol) => {
-    if(vol>=10000000) return '👑';
-    if(vol>=3000000)  return '🦈';
-    if(vol>=1000000)  return '🦈';
-    if(vol>=500000)   return '🦈';
-    if(vol>=100000)   return '🦈';
-    if(vol>=10000)    return '🐟';
-    return '🥚';
-  };
+// ════════════════════════════════════════
+//  UI HELPERS
+// ════════════════════════════════════════
+function showConnectedBar(icon, addr) {
+  document.getElementById('bar-disconnected').style.display = 'none';
+  document.getElementById('bar-connected').style.display = 'flex';
+  document.getElementById('wallet-icon').textContent = icon;
+  const short = addr.length > 16 ? addr.slice(0,6) + '...' + addr.slice(-4) : addr;
+  document.getElementById('wallet-addr-display').textContent = short;
+}
 
-  let myRank = null;
-  const html = entries.slice(0, 10).map((e, i) => {
-    const addr = e.identifier ?? e.user ?? '—';
-    const vol = parseFloat(e.volume ?? e.trading_volume ?? 0);
-    const short = addr.length > 12 ? addr.slice(0,6)+'...'+addr.slice(-4) : addr;
-    const isMe = wallet && addr.toLowerCase() === wallet.toLowerCase();
-    if (isMe) myRank = i + 1;
-    const rank = medals[i] ?? `#${i+1}`;
-    const volFmt = vol >= 1000000 ? (vol/1000000).toFixed(2)+'M' : vol >= 1000 ? (vol/1000).toFixed(1)+'K' : vol.toFixed(0);
-    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:6px;background:${isMe?'rgba(0,229,176,0.08)':'var(--bg3)'};border:1px solid ${isMe?'rgba(0,229,176,0.3)':'var(--border)'};transition:all .2s;">
-      <div style="font-size:18px;width:28px;text-align:center;">${rank}</div>
-      <div style="font-size:16px;">${stageEmoji(vol)}</div>
-      <div style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;color:${isMe?'var(--teal)':'var(--text)'};">${short}</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:${isMe?'var(--teal)':'var(--text2)'};">$${volFmt}</div>
+// ════════════════════════════════════════
+//  MATH
+// ════════════════════════════════════════
+function calcPnl(p) {
+  const e = parseFloat(p.entry_price), c = parseFloat(p.current_price || p.entry_price), a = parseFloat(p.amount);
+  return p.side === 'bid' ? (c - e) * a : (e - c) * a;
+}
+function posVal(p) { return parseFloat(p.entry_price) * parseFloat(p.amount); }
+function calcSize(p) {
+  const total = positions.reduce((s,x) => s + posVal(x), 0);
+  return 40 + (total > 0 ? posVal(p) / total : 1 / positions.length) * 210;
+}
+
+// ════════════════════════════════════════
+//  HEADER
+// ════════════════════════════════════════
+function updateHeader(acc) {
+  document.getElementById('h-balance').textContent = '$' + parseFloat(acc.balance).toFixed(2);
+  document.getElementById('h-equity').textContent  = '$' + parseFloat(acc.account_equity).toFixed(2);
+  const upnl = (parseFloat(acc.account_equity) - parseFloat(acc.balance)).toFixed(2);
+  const el = document.getElementById('h-upnl');
+  el.textContent = (upnl >= 0 ? '+$' : '-$') + Math.abs(upnl);
+  el.style.color = upnl >= 0 ? 'var(--long)' : 'var(--short)';
+  document.getElementById('h-cnt').textContent = positions.length;
+}
+
+// ════════════════════════════════════════
+//  FISH SVG
+// ════════════════════════════════════════
+function fishSVG(p, sz) {
+  const isLong = p.side === 'bid';
+  const rat = Math.min(1, Math.abs(calcPnl(p)) / (posVal(p) * .05 + 1));
+  const body = isLong ? `hsl(${155+rat*25},80%,${44+rat*16}%)` : `hsl(${5-rat*5},85%,${50+rat*10}%)`;
+  const fin  = isLong ? '#00bcd4' : '#ff7043';
+  const ring = isLong ? 'var(--long)' : 'var(--short)';
+  const h = sz * .52, id = p.symbol.replace(/\W/g, '');
+  return `<svg width="${sz}" height="${h}" viewBox="0 0 120 62" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+    <defs>
+      <radialGradient id="g${id}" cx="38%" cy="38%">
+        <stop offset="0%" stop-color="white" stop-opacity=".2"/>
+        <stop offset="100%" stop-color="${body}" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="f${id}" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="2" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <path d="M94 31 L120 8 L114 31 L120 54Z" fill="${fin}" opacity=".82"/>
+    <ellipse cx="52" cy="31" rx="46" ry="21" fill="${body}" filter="url(#f${id})"/>
+    <ellipse cx="52" cy="31" rx="46" ry="21" fill="url(#g${id})"/>
+    <path d="M33 10 Q53 1 73 10 Q53 14 33 10Z" fill="${fin}" opacity=".7"/>
+    <path d="M30 16 Q28 31 30 46" stroke="${fin}" stroke-width="2.2" fill="none" opacity=".55" stroke-linecap="round"/>
+    <circle cx="18" cy="26" r="5.5" fill="white"/>
+    <circle cx="19" cy="26" r="3.2" fill="#06101a"/>
+    <circle cx="20" cy="24.5" r="1.1" fill="white"/>
+    <ellipse cx="52" cy="31" rx="46" ry="21" fill="none" stroke="${ring}" stroke-width="1.2" opacity=".32"/>
+    ${p.isolated ? `<circle cx="97" cy="15" r="4.5" fill="${fin}" opacity=".88"/>
+      <text x="97" y="18" text-anchor="middle" font-size="5.5" fill="white" font-family="sans-serif">I</text>` : ''}
+  </svg>`;
+}
+
+// ════════════════════════════════════════
+//  BUILD TANK
+// ════════════════════════════════════════
+function buildTank() {
+  if (animId) cancelAnimationFrame(animId);
+  const tank = document.getElementById('tank');
+  Object.values(fishEls).forEach(e => e.remove());
+  fishEls = {}; fishState = {};
+  tank.querySelectorAll('.ray,.weed-el').forEach(e => e.remove());
+
+  // light rays
+  [{l:'12%',w:'55px',r:'-8deg',o:.3,d:0},{l:'30%',w:'40px',r:'-3deg',o:.18,d:1.5},
+   {l:'50%',w:'72px',r:'5deg', o:.26,d:.8},{l:'70%',w:'46px',r:'10deg',o:.2,d:2.2},
+   {l:'87%',w:'30px',r:'6deg', o:.14,d:3}
+  ].forEach(({l,w,r,o,d}) => {
+    const el = document.createElement('div'); el.className = 'ray';
+    el.style.cssText = `left:${l};width:${w};height:55%;opacity:${o};--ra:${r};animation-delay:${d}s`;
+    tank.insertBefore(el, tank.firstChild);
+  });
+
+  // seaweed
+  for (let i = 0; i < 8; i++) {
+    const weed = document.createElement('div'); weed.className = 'weed-el';
+    const x = 3 + (i / 8) * 94, h = 50 + Math.random() * 80, hue = 100 + Math.random() * 60;
+    weed.style.cssText = `position:absolute;bottom:88px;left:${x}%;width:10px;height:${h}px;
+      transform-origin:bottom center;animation:weedy ${3+Math.random()*3}s ease-in-out infinite;
+      animation-delay:${Math.random()*4}s`;
+    weed.innerHTML = `<svg viewBox="0 0 10 ${h}" width="10" height="${h}" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 ${h} Q2 ${h*.7} 5 ${h*.55} Q8 ${h*.4} 5 ${h*.25} Q2 ${h*.1} 5 0"
+        stroke="hsl(${hue},55%,26%)" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`;
+    tank.appendChild(weed);
+  }
+
+  // fish
+  const W = window.innerWidth, H = window.innerHeight;
+  positions.forEach(p => {
+    const sz = calcSize(p), pnl = calcPnl(p), isLong = p.side === 'bid';
+    const cp = parseFloat(p.current_price || p.entry_price), ep = parseFloat(p.entry_price);
+    const pct = ((cp - ep) / ep * 100);
+
+    fishState[p.symbol] = {
+      x: 80 + Math.random() * (W - 200), y: 70 + Math.random() * (H - 200),
+      vx: (Math.random() - .5) * 1.4, vy: (Math.random() - .5) * .6,
+      wobble: Math.random() * Math.PI * 2, facing: 1,
+    };
+
+    const el = document.createElement('div');
+    el.className = 'fish'; el.id = 'fish-' + p.symbol;
+    el.innerHTML = `
+      <div class="fish-body" id="fb-${p.symbol}">${fishSVG(p, sz)}</div>
+      <div class="fish-card">
+        <div class="fc-sym ${isLong?'fc-long':'fc-short'}">${p.symbol} ${isLong?'▲ LONG':'▼ SHORT'}</div>
+        <div class="fc-row"><span>수량</span><b>${parseFloat(p.amount).toLocaleString()}</b></div>
+        <div class="fc-row"><span>진입가</span><b>$${ep.toLocaleString()}</b></div>
+        <div class="fc-row"><span>현재가</span><b id="cp-${p.symbol}">$${cp.toLocaleString()}</b></div>
+        <div class="fc-row"><span>펀딩비</span><b>$${parseFloat(p.funding||0).toFixed(2)}</b></div>
+        <div class="fc-pnl ${pnl>=0?'pos':'neg'}" id="pnl-${p.symbol}">
+          ${pnl>=0?'+':'-'}$${Math.abs(pnl).toFixed(2)} (${pct>=0?'+':''}${pct.toFixed(2)}%)
+        </div>
+        ${p.isolated ? '<div style="font-size:.6rem;color:#4a7f90;margin-top:3px">📍 격리마진</div>' : ''}
+      </div>`;
+    el.style.cssText = `position:absolute;left:${fishState[p.symbol].x}px;top:${fishState[p.symbol].y}px`;
+    tank.appendChild(el);
+    fishEls[p.symbol] = el;
+  });
+
+  renderPanel();
+  animate();
+}
+
+// ════════════════════════════════════════
+//  ANIMATION LOOP
+// ════════════════════════════════════════
+function animate() {
+  const now = performance.now() / 1000;
+  positions.forEach(p => {
+    const s = fishState[p.symbol], el = fishEls[p.symbol];
+    if (!s || !el) return;
+    const sz = calcSize(p);
+    const maxX = window.innerWidth - sz - 10, maxY = window.innerHeight - sz*.52 - 95, minY = 65;
+    if (s.x < 10 || s.x > maxX) s.vx *= -1;
+    if (s.y < minY || s.y > maxY) s.vy *= -1;
+    s.wobble += .018;
+    s.vx += (Math.random() - .5) * .055;
+    s.vy += (Math.random() - .5) * .028 + Math.sin(s.wobble * .4) * .01;
+    const spd = 1.5;
+    s.vx = Math.max(-spd, Math.min(spd, s.vx));
+    s.vy = Math.max(-.65, Math.min(.65, s.vy));
+    s.x  = Math.max(10, Math.min(maxX, s.x + s.vx));
+    s.y  = Math.max(minY, Math.min(maxY, s.y + s.vy));
+    if (s.vx < 0) s.facing = -1; else s.facing = 1;
+    const wb = Math.sin(now * 2.2 + s.wobble) * 1.8;
+    const fb = document.getElementById('fb-' + p.symbol);
+    if (fb) fb.style.transform = `scaleX(${s.facing}) translateY(${wb}px)`;
+    el.style.left = s.x + 'px'; el.style.top = s.y + 'px';
+  });
+  animId = requestAnimationFrame(animate);
+}
+
+// ════════════════════════════════════════
+//  PANEL
+// ════════════════════════════════════════
+function renderPanel() {
+  const list = document.getElementById('pos-list');
+  if (!positions.length) {
+    list.innerHTML = '<p style="font-size:.66rem;color:#2a5060;text-align:center;padding:12px 0">포지션 없음</p>';
+    return;
+  }
+  list.innerHTML = positions.map(p => {
+    const pnl = calcPnl(p);
+    const pct = ((parseFloat(p.current_price||p.entry_price) - parseFloat(p.entry_price)) / parseFloat(p.entry_price) * 100);
+    const isLong = p.side === 'bid';
+    return `<div class="prow" onclick="highlight('${p.symbol}')">
+      <div class="prow-l">
+        <span class="prow-sym">${p.symbol}</span>
+        <span class="badge ${isLong?'bl':'bs'}">${isLong?'LONG':'SHORT'}</span>
+      </div>
+      <span style="font-weight:600;font-size:.7rem" class="${pnl>=0?'pos':'neg'}">${pct>=0?'+':''}${pct.toFixed(1)}%</span>
     </div>`;
   }).join('');
-
-  document.getElementById('leaderList').innerHTML = html || '<div style="text-align:center;padding:1rem;color:var(--text3);">데이터 없음</div>';
-
-  if (myRank) {
-    document.getElementById('myRankBar').style.display = 'block';
-    document.getElementById('myRankTxt').textContent = `${myRank}위`;
-  }
 }
 
-function copyRef() {
-  const link = document.getElementById('refLink').textContent;
-  navigator.clipboard.writeText(link).then(() => {
-    const btn = document.getElementById('copyRefBtn');
-    btn.textContent = '복사됨 ✓';
-    btn.style.color = 'var(--teal)';
-    setTimeout(() => { btn.textContent = '복사'; btn.style.color = ''; }, 2000);
+function updatePanelOnly() {
+  renderPanel();
+  positions.forEach(p => {
+    const cp = parseFloat(p.current_price || p.entry_price), ep = parseFloat(p.entry_price);
+    const pnl = calcPnl(p), pct = (cp - ep) / ep * 100;
+    const cpEl  = document.getElementById('cp-'  + p.symbol);
+    const pnlEl = document.getElementById('pnl-' + p.symbol);
+    if (cpEl)  cpEl.textContent  = '$' + cp.toLocaleString(undefined, {maximumFractionDigits:4});
+    if (pnlEl) {
+      pnlEl.textContent = (pnl>=0?'+':'-') + '$' + Math.abs(pnl).toFixed(2) + ' (' + (pct>=0?'+':'') + pct.toFixed(2) + '%)';
+      pnlEl.className = 'fc-pnl ' + (pnl >= 0 ? 'pos' : 'neg');
+    }
   });
 }
+
+function highlight(sym) {
+  const el = fishEls[sym]; if (!el) return;
+  el.style.filter = 'brightness(2.2) drop-shadow(0 0 26px var(--glow))';
+  setTimeout(() => { el.style.filter = ''; }, 1600);
+}
+
+// ════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════
+let toastTimer;
+function toast(msg, dur=4000) {
+  const el = document.getElementById('toast');
+  el.innerHTML = msg.replace(/\n/g, '<br>');
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), dur);
+}
+function showLoad(m) { document.getElementById('loading').classList.add('show'); setLoad(m); }
+function hideLoad()  { document.getElementById('loading').classList.remove('show'); }
+function setLoad(m)  { document.getElementById('load-msg').textContent = m; }
+function setStatus(state, txt) {
+  document.getElementById('sdot').className = 'dot' + (state==='live'?' live':state==='err'?' err':'');
+  document.getElementById('stxt').textContent = txt;
+}
+
+// enter key in manual input
+document.getElementById('manual-addr').addEventListener('keydown', e => { if (e.key==='Enter') connectManual(); });
+
+// close modal on outside click
+document.getElementById('wallet-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('wallet-modal')) closeModal();
+});
+
+// bubbles
+setInterval(() => {
+  const b = document.createElement('div'); b.className = 'bubble';
+  const sz = 3 + Math.random() * 9;
+  b.style.cssText = `width:${sz}px;height:${sz}px;left:${5+Math.random()*90}%;
+    bottom:${85+Math.random()*50}px;--dx:${(Math.random()-.5)*28}px;
+    animation-duration:${7+Math.random()*9}s;animation-delay:${Math.random()*1.5}s`;
+  document.getElementById('tank').appendChild(b);
+  setTimeout(() => b.remove(), 18000);
+}, 700);
+
+// auto-detect wallet on load
+window.addEventListener('load', () => {
+  setTimeout(checkWalletAvailability, 500);
+
+  // Phantom 자동 재연결
+  const phantom = window.phantom?.solana || window.solana;
+  if (phantom?.isPhantom && phantom.isConnected) {
+    connectedWallet = phantom.publicKey?.toString();
+    if (connectedWallet) {
+      walletType = 'phantom';
+      showConnectedBar('👻', connectedWallet);
+      loadFromWallet(connectedWallet);
+    }
+  }
+
+  // Solflare 자동 재연결
+  if (window.solflare?.isSolflare && window.solflare.isConnected) {
+    connectedWallet = window.solflare.publicKey?.toString();
+    if (connectedWallet) {
+      walletType = 'solflare';
+      showConnectedBar('🔥', connectedWallet);
+      loadFromWallet(connectedWallet);
+    }
+  }
+});
 </script>
 </body>
 </html>
